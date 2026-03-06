@@ -5,14 +5,39 @@ import { motion } from 'framer-motion';
 
 const NUMBERS = Array.from({ length: 9 }, (_, i) => i + 1);
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  opacity: number;
+  duration: number;
+}
+
 export function CelestialOrb() {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      return mobile;
+    };
+    
+    const mobileStatus = checkMobile();
     window.addEventListener('resize', checkMobile);
+
+    // Generate random particles only on client to avoid hydration mismatch
+    const particleCount = mobileStatus ? 10 : 20;
+    const newParticles = Array.from({ length: particleCount }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 600 - 300,
+      y: Math.random() * 600 - 300,
+      opacity: Math.random(),
+      duration: 4 + Math.random() * 4,
+    }));
+    setParticles(newParticles);
 
     const handleMouseMove = (e: MouseEvent) => {
       if (window.innerWidth < 768) return; // Disable hover tilt on mobile
@@ -82,22 +107,22 @@ export function CelestialOrb() {
         </svg>
       </motion.div>
 
-      {/* Floating Particles */}
-      {Array.from({ length: isMobile ? 10 : 20 }).map((_, i) => (
+      {/* Floating Particles - Rendered only after client-side calculation */}
+      {particles.map((p) => (
         <motion.div
-          key={i}
+          key={p.id}
           className="absolute w-1 h-1 bg-accent/40 rounded-full"
           initial={{ 
-            x: Math.random() * 600 - 300, 
-            y: Math.random() * 600 - 300,
-            opacity: Math.random()
+            x: p.x, 
+            y: p.y,
+            opacity: p.opacity
           }}
           animate={{ 
             y: [0, -30, 0],
             opacity: [0.1, 0.6, 0.1]
           }}
           transition={{
-            duration: 4 + Math.random() * 4,
+            duration: p.duration,
             repeat: Infinity,
             ease: "easeInOut"
           }}
