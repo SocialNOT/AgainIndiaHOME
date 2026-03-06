@@ -245,25 +245,26 @@ export default function Home() {
                   <section className="relative w-full flex flex-col items-center">
                     <CelestialOrb userProfile={userProfile} lifePath={personalData?.lifePath} />
                     
-                    {/* Responsive "One Liner" Grid of Celestial Events */}
+                    {/* High-End Cosmic Events Grid: Icons on Mobile, Details on Desktop */}
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-8 w-full max-w-6xl flex flex-nowrap overflow-x-auto no-scrollbar gap-4 px-4 lg:grid lg:grid-cols-6 lg:gap-4 lg:px-0 z-20"
+                      className="mt-8 w-full max-w-4xl grid grid-cols-6 gap-2 sm:gap-4 px-4 sm:px-0 z-20"
                     >
                       {celestialEvents.map((item, i) => (
                         <Card 
                           key={i} 
                           onClick={() => setSelectedEvent(item)}
-                          className="glass-morphism border-none p-4 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-all cursor-pointer relative overflow-hidden h-28 min-w-[140px] sm:min-w-0"
+                          className="glass-morphism border-none p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-1 group hover:scale-110 transition-all cursor-pointer relative overflow-hidden aspect-square sm:aspect-auto sm:h-28 rounded-xl sm:rounded-[2rem]"
                         >
-                          <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <item.icon className={`w-6 h-6 ${item.color}`} />
+                          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                          <item.icon className={`w-7 h-7 sm:w-5 sm:h-5 ${item.color} group-hover:animate-pulse transition-transform duration-500`} />
+                          
+                          <div className="hidden sm:flex flex-col items-center gap-0.5">
+                            <span className="text-[8px] uppercase font-black tracking-widest text-foreground/60">{item.label}</span>
+                            <span className={`text-[10px] font-headline font-black text-foreground group-hover:neon-glow line-clamp-1`}>{item.value}</span>
+                            <span className="text-[9px] font-bold text-primary opacity-70 group-hover:opacity-100">{item.impact}</span>
                           </div>
-                          <item.icon className={`w-4 h-4 mb-1 ${item.color} group-hover:animate-pulse`} />
-                          <span className="text-[8px] uppercase font-black tracking-widest text-foreground/60">{item.label}</span>
-                          <span className={`text-xs font-headline font-black text-foreground group-hover:neon-glow line-clamp-1`}>{item.value}</span>
-                          <span className="text-[9px] font-bold text-primary opacity-70 group-hover:opacity-100">{item.impact}</span>
                         </Card>
                       ))}
                     </motion.div>
