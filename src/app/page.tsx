@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CelestialOrb } from '@/components/orrery/CelestialOrb';
 import { GlassDock } from '@/components/navigation/GlassDock';
@@ -15,8 +15,16 @@ import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator'
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, MessageSquare, Sparkles, Zap, Heart } from 'lucide-react';
+import { MapPin, MessageSquare, Sparkles, Zap, Heart, Star, TrendingUp, Calendar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+
+const reduceToSingleDigit = (num: number): number => {
+  if (num === 11 || num === 22 || num === 33) return num;
+  while (num > 9) {
+    num = num.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+  }
+  return num;
+};
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
@@ -36,7 +44,7 @@ export default function Home() {
     const saved = localStorage.getItem('again-india-profile');
     const savedTheme = localStorage.getItem('again-india-theme');
     if (saved) setUserProfile(JSON.parse(saved));
-    if (savedTheme) setTheme(savedTheme);
+    if (savedTheme) setTheme(savedTheme || 'cyber');
 
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((pos) => {
@@ -88,6 +96,22 @@ export default function Home() {
     setShowOnboarding(false);
   };
 
+  // Personalized Numerology Hooks
+  const personalData = useMemo(() => {
+    if (!userProfile?.birthDate) return null;
+    const now = new Date();
+    const [year, month, day] = userProfile.birthDate.split('-').map(Number);
+    const lifePath = reduceToSingleDigit(year + month + day);
+    
+    // Future/Magical Numbers
+    const currentYear = now.getFullYear();
+    const personalYear = reduceToSingleDigit(month + day + currentYear);
+    const personalMonth = reduceToSingleDigit(personalYear + (now.getMonth() + 1));
+    const universalDay = reduceToSingleDigit((now.getMonth() + 1) + now.getDate() + currentYear);
+
+    return { lifePath, personalYear, personalMonth, universalDay };
+  }, [userProfile]);
+
   const isLanding = !userProfile;
 
   return (
@@ -121,6 +145,7 @@ export default function Home() {
           {!isLanding && (
             <motion.div 
               whileHover={{ scale: 1.05 }}
+              onClick={() => setShowOnboarding(true)}
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-primary to-secondary p-[1px] shadow-[0_0_20px_rgba(var(--primary),0.3)] cursor-pointer"
             >
               <div className="w-full h-full rounded-full bg-background flex items-center justify-center font-black text-sm text-primary">
@@ -166,20 +191,29 @@ export default function Home() {
                     </motion.button>
                   </div>
 
-                  {/* Central Orrery */}
-                  <section className="relative w-full">
-                    <CelestialOrb />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-10">
-                      <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="space-y-2"
-                      >
-                        <div className="text-[10px] uppercase tracking-[0.5em] text-primary font-black">Sync Frequency</div>
-                        <div className="text-6xl sm:text-9xl font-headline font-black text-foreground neon-glow">99.1</div>
-                        <div className="text-[10px] text-secondary font-black tracking-[0.3em] uppercase">Cosmic Lock Active</div>
-                      </motion.div>
-                    </div>
+                  {/* Central Interactive Orrery */}
+                  <section className="relative w-full flex flex-col items-center">
+                    <CelestialOrb userProfile={userProfile} lifePath={personalData?.lifePath} />
+                    
+                    {/* Dynamic Data Hub Under the Orb */}
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-[-20px] w-full max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-4 px-4 z-20"
+                    >
+                      {[
+                        { label: 'Personal Year', value: personalData?.personalYear, icon: Star, color: 'text-primary' },
+                        { label: 'Personal Month', value: personalData?.personalMonth, icon: TrendingUp, color: 'text-secondary' },
+                        { label: 'Universal Day', value: personalData?.universalDay, icon: Calendar, color: 'text-accent' },
+                        { label: 'Astro Event', value: 'Moon Rise', icon: Sparkles, color: 'text-primary' },
+                      ].map((item, i) => (
+                        <Card key={i} className="glass-morphism border-none p-4 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-transform">
+                          <item.icon className={`w-4 h-4 mb-1 ${item.color}`} />
+                          <span className="text-[9px] uppercase font-black tracking-widest text-foreground/60">{item.label}</span>
+                          <span className={`text-2xl font-headline font-black text-foreground group-hover:neon-glow`}>{item.value}</span>
+                        </Card>
+                      ))}
+                    </motion.div>
                   </section>
 
                   {/* Compact Dashboard Cards */}
