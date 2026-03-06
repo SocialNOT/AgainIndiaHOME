@@ -21,6 +21,32 @@
         "lastUpdated": { "type": "string", "format": "date-time" }
       },
       "required": ["name", "birthDate", "birthPlace"]
+    },
+    "UserRitual": {
+      "title": "User Ritual",
+      "description": "A personalized daily micro-ritual assigned by Sankhya.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["color", "music", "action"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "completed": { "type": "boolean" },
+        "rationale": { "type": "string" }
+      }
+    },
+    "UserAnalysis": {
+      "title": "User Analysis",
+      "description": "Saved Vastu or Palmistry analysis reports.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["palm", "vastu"] },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "photoUrl": { "type": "string" }
+      }
     }
   },
   "auth": {
@@ -30,6 +56,14 @@
     "/users/{userId}": {
       "schema": "UserProfile",
       "description": "Individual user settings and birth data."
+    },
+    "/users/{userId}/rituals/{ritualId}": {
+      "schema": "UserRitual",
+      "description": "Daily rituals assigned to the user."
+    },
+    "/users/{userId}/history/{analysisId}": {
+      "schema": "UserAnalysis",
+      "description": "Historical Vastu and Palmistry reports."
     }
   }
 }

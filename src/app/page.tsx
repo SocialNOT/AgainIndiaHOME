@@ -10,6 +10,7 @@ import { UserBirthModal } from '@/components/onboarding/UserBirthModal';
 import { QueryInterface } from '@/components/sankhya/QueryInterface';
 import { PalmScanner } from '@/components/sankhya/PalmScanner';
 import { RitualGenerator } from '@/components/sankhya/RitualGenerator';
+import { RitualVault } from '@/components/sankhya/RitualVault';
 import { VastuCompass } from '@/components/sankhya/VastuCompass';
 import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator';
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
@@ -301,6 +302,7 @@ export default function Home() {
                 {activeTab === 'chat' && <QueryInterface userProfile={userProfile} language={language} />}
                 {activeTab === 'palm' && <PalmScanner language={language} />}
                 {activeTab === 'rituals' && <RitualGenerator userProfile={userProfile} language={language} />}
+                {activeTab === 'vault' && <RitualVault userProfile={userProfile} language={language} />}
                 {activeTab === 'compass' && <VastuCompass language={language} />}
                 {activeTab === 'calculator' && <NumerologyCalculator userProfile={userProfile} language={language} />}
               </div>
