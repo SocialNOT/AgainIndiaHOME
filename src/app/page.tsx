@@ -16,8 +16,9 @@ import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator'
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, MessageSquare, Sparkles, Zap, Star, Sun, Moon, Orbit, Shield, Zap as Lightning } from 'lucide-react';
+import { MapPin, MessageSquare, Sparkles, Zap, Star, Sun, Moon, Orbit, Shield, Zap as Lightning, Info, Target, History } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const reduceToSingleDigit = (num: number): number => {
   if (num === 11 || num === 22 || num === 33) return num;
@@ -35,6 +36,7 @@ export default function Home() {
   const [dailyData, setDailyData] = useState<DailySankhyaInsightOutput | null>(null);
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [location, setLocation] = useState({ lat: 25.3176, lon: 82.9739, name: 'Varanasi Pulse' });
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   // Reset scroll on module change
   useEffect(() => {
@@ -112,12 +114,54 @@ export default function Home() {
   }, [userProfile]);
 
   const celestialEvents = [
-    { label: 'Sun Path', value: 'Aries Transit', icon: Sun, impact: 'High Vitality', color: 'text-primary' },
-    { label: 'Moon Phase', value: 'Waxing Crescent', icon: Moon, impact: 'Internal Growth', color: 'text-secondary' },
-    { label: 'Mercury Flow', value: 'Direct Motion', icon: Orbit, impact: 'Clear Logic', color: 'text-accent' },
-    { label: 'Mars Pulse', value: 'Leo Energy', icon: Lightning, impact: 'Creative Force', color: 'text-primary' },
-    { label: 'Jupiter Reach', icon: Star, value: 'Pisces Horizon', impact: 'Spiritual Expansion', color: 'text-secondary' },
-    { label: 'Saturn Hold', icon: Shield, value: 'Aquarius Zone', impact: 'Karmic Structure', color: 'text-accent' },
+    { 
+      label: 'Sun Path', 
+      value: 'Aries Transit', 
+      icon: Sun, 
+      impact: 'High Vitality', 
+      color: 'text-primary',
+      details: 'The Sun in Aries marks a period of radical initiation. It is a time for bold action, setting new boundaries, and asserting your primal willpower.'
+    },
+    { 
+      label: 'Moon Phase', 
+      value: 'Waxing Crescent', 
+      icon: Moon, 
+      impact: 'Internal Growth', 
+      color: 'text-secondary',
+      details: 'As the light returns, focus on nurturing the seeds of intention planted during the New Moon. This phase supports expansion and creative manifestation.'
+    },
+    { 
+      label: 'Mercury Flow', 
+      value: 'Direct Motion', 
+      icon: Orbit, 
+      impact: 'Clear Logic', 
+      color: 'text-accent',
+      details: 'Mercury moving forward in Taurus brings practical clarity to communication. It is an ideal time for signing contracts and formalizing intellectual plans.'
+    },
+    { 
+      label: 'Mars Pulse', 
+      value: 'Leo Energy', 
+      icon: Lightning, 
+      impact: 'Creative Force', 
+      color: 'text-primary',
+      details: 'Mars in Leo encourages courageous self-expression. Your drive is fueled by passion and the desire to be seen and celebrated in your authentic power.'
+    },
+    { 
+      label: 'Jupiter Reach', 
+      icon: Star, 
+      value: 'Pisces Horizon', 
+      impact: 'Spiritual Expansion', 
+      color: 'text-secondary',
+      details: 'Jupiter in its own sign of Pisces dissolves limitations. Expect a heightened sense of compassion, intuitive breakthroughs, and spiritual abundance.'
+    },
+    { 
+      label: 'Saturn Hold', 
+      icon: Shield, 
+      value: 'Aquarius Zone', 
+      impact: 'Karmic Structure', 
+      color: 'text-accent',
+      details: 'Saturn in Aquarius demands innovation through discipline. It is a call to build new societal structures and embrace your role within the collective consciousness.'
+    },
   ];
 
   const isLanding = !userProfile;
@@ -201,21 +245,25 @@ export default function Home() {
                   <section className="relative w-full flex flex-col items-center">
                     <CelestialOrb userProfile={userProfile} lifePath={personalData?.lifePath} />
                     
-                    {/* 2x3 Grid of Ongoing/Future Celestial Events */}
+                    {/* Responsive "One Liner" Grid of Celestial Events */}
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-8 w-full max-w-5xl grid grid-cols-2 md:grid-cols-3 gap-4 px-4 z-20"
+                      className="mt-8 w-full max-w-6xl flex flex-nowrap overflow-x-auto no-scrollbar gap-4 px-4 lg:grid lg:grid-cols-6 lg:gap-4 lg:px-0 z-20"
                     >
                       {celestialEvents.map((item, i) => (
-                        <Card key={i} className="glass-morphism border-none p-5 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-all cursor-default relative overflow-hidden h-32">
+                        <Card 
+                          key={i} 
+                          onClick={() => setSelectedEvent(item)}
+                          className="glass-morphism border-none p-4 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-all cursor-pointer relative overflow-hidden h-28 min-w-[140px] sm:min-w-0"
+                        >
                           <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <item.icon className={`w-8 h-8 ${item.color}`} />
+                            <item.icon className={`w-6 h-6 ${item.color}`} />
                           </div>
-                          <item.icon className={`w-5 h-5 mb-1 ${item.color} group-hover:animate-pulse`} />
-                          <span className="text-[9px] uppercase font-black tracking-widest text-foreground/60">{item.label}</span>
-                          <span className={`text-base font-headline font-black text-foreground group-hover:neon-glow`}>{item.value}</span>
-                          <span className="text-[10px] font-bold text-primary opacity-70 group-hover:opacity-100">{item.impact}</span>
+                          <item.icon className={`w-4 h-4 mb-1 ${item.color} group-hover:animate-pulse`} />
+                          <span className="text-[8px] uppercase font-black tracking-widest text-foreground/60">{item.label}</span>
+                          <span className={`text-xs font-headline font-black text-foreground group-hover:neon-glow line-clamp-1`}>{item.value}</span>
+                          <span className="text-[9px] font-bold text-primary opacity-70 group-hover:opacity-100">{item.impact}</span>
                         </Card>
                       ))}
                     </motion.div>
@@ -265,6 +313,51 @@ export default function Home() {
 
       <UserBirthModal isOpen={showOnboarding} onComplete={handleOnboardingComplete} onCancel={() => setShowOnboarding(false)} />
       {!isLanding && <GlassDock activeTab={activeTab} onTabChange={setActiveTab} />}
+
+      {/* Celestial Event Deep Dive Modal */}
+      <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-md rounded-[3rem]">
+          {selectedEvent && (
+            <>
+              <DialogHeader className="space-y-4">
+                <div className={`w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center ${selectedEvent.color} mx-auto border border-primary/20 shadow-2xl`}>
+                  <selectedEvent.icon className="w-8 h-8" />
+                </div>
+                <DialogTitle className="font-headline text-2xl font-bold text-center text-primary uppercase tracking-tighter">
+                  {selectedEvent.label} Deep Dive
+                </DialogTitle>
+                <DialogDescription className="text-center text-foreground font-black uppercase tracking-widest text-[10px] opacity-80">
+                  {selectedEvent.value} Resonance
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-6 pt-4">
+                <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                  <h4 className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px]">
+                    <Target className="w-4 h-4" /> Celestial Impact
+                  </h4>
+                  <p className="text-sm text-foreground leading-relaxed font-bold italic">
+                    {selectedEvent.details}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl bg-secondary/10 border border-secondary/20 flex flex-col items-center text-center">
+                    <Zap className="w-4 h-4 text-secondary mb-2" />
+                    <h5 className="text-[9px] font-black uppercase text-secondary tracking-widest">Active Pulse</h5>
+                    <p className="text-[10px] text-foreground font-black">{selectedEvent.impact}</p>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-accent/10 border border-accent/20 flex flex-col items-center text-center">
+                    <History className="w-4 h-4 text-accent mb-2" />
+                    <h5 className="text-[9px] font-black uppercase text-accent tracking-widest">Cycle Duration</h5>
+                    <p className="text-[10px] text-foreground font-black">28 Days Active</p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
