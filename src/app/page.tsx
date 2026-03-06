@@ -8,8 +8,12 @@ import { DailyBriefing } from '@/components/sankhya/DailyBriefing';
 import { LifeGraph } from '@/components/sankhya/LifeGraph';
 import { UserBirthModal } from '@/components/onboarding/UserBirthModal';
 import { QueryInterface } from '@/components/sankhya/QueryInterface';
+import { PalmScanner } from '@/components/sankhya/PalmScanner';
+import { RitualGenerator } from '@/components/sankhya/RitualGenerator';
+import { VastuCompass } from '@/components/sankhya/VastuCompass';
+import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, Search, Menu } from 'lucide-react';
+import { MapPin, MessageSquare, Sparkles } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
@@ -62,15 +66,15 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen bg-background flex flex-col">
+    <main className="relative min-h-screen bg-cosmic flex flex-col">
       {/* Top Bar */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 backdrop-blur-md bg-background/40 border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 backdrop-blur-md bg-background/20 border-b border-white/5">
         <div className="flex items-center gap-3 sm:gap-6">
           <h1 className="font-headline text-lg sm:text-2xl font-bold tracking-tighter text-foreground whitespace-nowrap">
-            AGAIN <span className="text-accent">INDIA</span>
+            AGAIN <span className="text-primary">INDIA</span>
           </h1>
           <div className="hidden lg:flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-widest font-medium bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-            <MapPin className="w-3 h-3 text-accent" />
+            <MapPin className="w-3 h-3 text-primary" />
             Varanasi, UP
           </div>
         </div>
@@ -78,10 +82,10 @@ export default function Home() {
         <div className="flex items-center gap-3 sm:gap-6">
           <div className="hidden md:block text-right">
             <div className="text-[10px] font-bold text-foreground uppercase tracking-widest">SANKHYA CORE</div>
-            <div className="text-[9px] text-accent/70 uppercase">RES_0.94 ACTIVE</div>
+            <div className="text-[9px] text-primary/70 uppercase">RES_0.98 ACTIVE</div>
           </div>
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-primary to-accent p-[1px] shadow-[0_0_15px_rgba(133,230,255,0.2)]">
-            <div className="w-full h-full rounded-full bg-background flex items-center justify-center font-bold text-xs sm:text-sm text-accent">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-primary via-white/50 to-secondary p-[1px] shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+            <div className="w-full h-full rounded-full bg-background flex items-center justify-center font-bold text-xs sm:text-sm text-primary">
               {userProfile?.name?.charAt(0) || 'S'}
             </div>
           </div>
@@ -99,6 +103,28 @@ export default function Home() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-12 sm:space-y-20"
             >
+              {/* One-liner Chat CTA */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={() => setActiveTab('chat')}
+                className="glass-morphism rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:bg-white/10 transition-all border-primary/20 group overflow-hidden relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <MessageSquare className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold uppercase tracking-widest text-primary">Sankhya Speak</h4>
+                    <p className="text-xs text-muted-foreground">Ask the Oracle: "What is the resonance of my today?"</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform relative z-10">
+                  INITIATE DIALOGUE <span>→</span>
+                </div>
+              </motion.div>
+
               {/* Central Orrery */}
               <section className="relative w-full overflow-visible py-8 sm:py-12">
                 <CelestialOrb />
@@ -109,7 +135,7 @@ export default function Home() {
                     transition={{ delay: 0.5 }}
                     className="space-y-1 sm:space-y-2"
                   >
-                    <div className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-accent font-bold px-4">Resonance Level</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-[0.3em] text-primary font-bold px-4">Resonance Level</div>
                     <div className="text-4xl sm:text-6xl font-headline font-bold text-white neon-glow">98.2%</div>
                   </motion.div>
                 </div>
@@ -127,14 +153,14 @@ export default function Home() {
                 </div>
                 <div className="glass-morphism rounded-3xl p-6 sm:p-8 flex flex-col justify-center gap-6 border-none relative overflow-hidden group">
                   <div className="absolute -top-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <Search className="w-32 h-32 text-accent" />
+                    <Sparkles className="w-32 h-32 text-primary" />
                   </div>
-                  <h3 className="text-xl font-headline font-medium text-accent">Real-time Synchro</h3>
+                  <h3 className="text-xl font-headline font-medium text-primary">Real-time Synchro</h3>
                   <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                     Sankhya is currently monitoring the transit of <span className="text-foreground font-medium">Saturn in Aquarius</span>. 
                     Your personal year energy is peaking.
                   </p>
-                  <button className="w-fit text-xs font-bold uppercase tracking-widest text-accent flex items-center gap-2 hover:translate-x-2 transition-transform py-2">
+                  <button onClick={() => setActiveTab('calculator')} className="w-fit text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-2 hover:translate-x-2 transition-transform py-2">
                     View Full Analysis <span className="text-lg">→</span>
                   </button>
                 </div>
@@ -154,31 +180,27 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* Fallback for undeveloped modules */}
-          {['calculator', 'compass', 'palm', 'rituals'].includes(activeTab) && (
-            <motion.div
-              key="placeholder"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="min-h-[50vh] flex flex-col items-center justify-center text-center space-y-6 px-6"
-            >
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full border-2 border-dashed border-accent/30 animate-spin-very-slow" />
-                <Search className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 text-accent/50" />
-              </div>
-              <div className="space-y-2">
-                <h2 className="font-headline text-2xl sm:text-3xl text-accent">Module Synchronizing</h2>
-                <p className="text-muted-foreground max-w-sm mx-auto text-sm sm:text-base">
-                  Sankhya is currently processing the data for this module. Resonance will be available shortly.
-                </p>
-              </div>
-              <button 
-                onClick={() => setActiveTab('home')}
-                className="px-6 py-2 rounded-full bg-accent/10 border border-accent/20 text-xs text-accent uppercase font-bold tracking-widest hover:bg-accent hover:text-background transition-all"
-              >
-                Return to Orrery
-              </button>
+          {activeTab === 'palm' && (
+            <motion.div key="palm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <PalmScanner />
+            </motion.div>
+          )}
+
+          {activeTab === 'rituals' && (
+            <motion.div key="rituals" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <RitualGenerator userProfile={userProfile} />
+            </motion.div>
+          )}
+
+          {activeTab === 'compass' && (
+            <motion.div key="compass" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <VastuCompass />
+            </motion.div>
+          )}
+
+          {activeTab === 'calculator' && (
+            <motion.div key="calculator" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <NumerologyCalculator userProfile={userProfile} />
             </motion.div>
           )}
         </AnimatePresence>
