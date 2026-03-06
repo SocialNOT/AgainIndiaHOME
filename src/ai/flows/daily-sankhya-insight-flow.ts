@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview Provides a comprehensive daily insight based on user birth details, current location,
@@ -31,8 +30,13 @@ const DailySankhyaInsightOutputSchema = z.object({
     .describe(
       'A comprehensive daily insight based on numerology, astrology, and vastu. Keep it concise, poetic, and inspiring.'
     ),
-  energeticAlignment: z.string().describe('A summary of the user\u0027s current energetic alignment.'),
-  dailyTheme: z.string().describe('The dominant themes for the user\u0027s day.'),
+  summary: z.string().describe('A one-sentence executive summary of the day.'),
+  energeticAlignment: z.string().describe('A summary of the user\'s current energetic alignment.'),
+  dailyTheme: z.string().describe('The dominant themes for the user\'s day.'),
+  highlights: z.array(z.string()).describe('Top 3 strategic highlights for the day.'),
+  opportunities: z.array(z.string()).describe('Specific opportunities the user should look out for.'),
+  thingsToAvoid: z.array(z.string()).describe('Specific actions or mindsets to avoid today.'),
+  suggestions: z.array(z.string()).describe('Actionable suggestions for professional or personal growth.'),
   microRituals: z
     .array(z.string())
     .describe('Personalized micro-rituals for the day, e.g., specific colors to wear, frequency music, affirmations.'),
@@ -94,7 +98,7 @@ const dailySankhyaInsightPrompt = ai.definePrompt({
 
 IMPORTANT: Provide the response in the language specified: {{{language}}}. If the language is 'bn', use Bengali. If 'hi', use Hindi. Default to English if not specified or understood.
 
-Integrate all provided information to synthesize a comprehensive daily insight, energetic alignment, daily themes, and specific micro-rituals.
+Integrate all provided information to synthesize a comprehensive daily insight, summary, highlights, opportunities, risks (things to avoid), and specific micro-rituals.
 
 User Profile:
 - Name: {{{userName}}}
@@ -109,8 +113,13 @@ Current Context:
 Real-time Planetary and Astrological Data:
 {{{planetaryAndAstrologicalData}}}
 
-Task: Generate a concise, poetic, and inspiring daily insight, a summary of energetic alignment, dominant daily themes, and 2-3 actionable micro-rituals. Ensure the output is well-structured and aligns with the principles of Numerology, Jyotish, and Vastu. Do not mention your persona explicitly in the output.
-`,
+Task: Generate a concise, poetic, and inspiring daily insight. 
+Provide a one-sentence summary.
+List 3 strategic highlights.
+Identify 2-3 specific opportunities.
+Identify 2-3 things to avoid.
+Provide 2-3 actionable suggestions/remedies.
+Ensure the output is well-structured and aligns with the principles of Numerology, Jyotish, and Vastu.`,
 });
 
 const dailySankhyaInsightFlow = ai.defineFlow(
