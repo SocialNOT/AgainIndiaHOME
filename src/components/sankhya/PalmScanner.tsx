@@ -1,11 +1,14 @@
+
 "use client"
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Scan, RefreshCcw, Info, Loader2, Sparkles, BookOpen, Target, Zap, Upload } from 'lucide-react';
+import { Camera, Scan, RefreshCcw, Info, Loader2, Sparkles, BookOpen, Target, Zap, Upload, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { interpretPalmLines } from '@/ai/flows/interpret-palm-lines-flow';
+import { useUser, useFirestore, FirestorePermissionError, errorEmitter } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import {
   Dialog,
@@ -16,6 +19,8 @@ import {
 } from "@/components/ui/dialog";
 
 export function PalmScanner() {
+  const { user } = useUser();
+  const db = useFirestore();
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -74,11 +79,29 @@ export function PalmScanner() {
   };
 
   const handleProcess = async () => {
-    if (!photo) return;
+    if (!photo || !user) return;
     setIsProcessing(true);
     try {
       const response = await interpretPalmLines({ photoDataUri: photo });
       setResult(response.interpretation);
+
+      const historyRef = collection(db, 'users', user.uid, 'history');
+      const historyData = {
+        type: 'palm',
+        content: response.interpretation,
+        timestamp: serverTimestamp(),
+        photoUrl: photo.slice(0, 1000)
+      };
+
+      addDoc(historyRef, historyData).catch(async () => {
+        const permissionError = new FirestorePermissionError({
+          path: historyRef.path,
+          operation: 'create',
+          requestResourceData: historyData
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
+
     } catch (error) {
       console.error("Processing error:", error);
     } finally {
@@ -94,7 +117,7 @@ export function PalmScanner() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start px-4">
-        <Card className="glass-morphism overflow-hidden relative border-white/5 rounded-3xl random-stack-1 shadow-2xl">
+        <Card className="glass-morphism overflow-hidden relative border-white/5 rounded-none shadow-2xl">
           {!photo ? (
             <div className="relative aspect-[3/4] bg-black/40 flex items-center justify-center">
               <video 
@@ -105,7 +128,7 @@ export function PalmScanner() {
                 className="absolute inset-0 w-full h-full object-cover grayscale opacity-70"
               />
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-                <div className="w-64 h-80 border-2 border-primary/40 border-dashed rounded-[4rem] animate-pulse" />
+                <div className="w-64 h-80 border-2 border-primary/40 border-dashed rounded-none animate-pulse" />
                 <div className="absolute inset-0 sacred-grid opacity-20" />
               </div>
               
@@ -113,7 +136,7 @@ export function PalmScanner() {
                 <div className="flex gap-4">
                   <Button 
                     onClick={capturePhoto} 
-                    className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_40px_rgba(var(--primary),0.5)] transition-all"
+                    className="w-16 h-16 rounded-none bg-primary hover:bg-primary/90 shadow-[0_0_40px_rgba(var(--primary),0.5)] transition-all"
                     disabled={hasCameraPermission === false}
                   >
                     <Camera className="w-8 h-8 text-background" />
@@ -121,7 +144,7 @@ export function PalmScanner() {
                   <Button 
                     variant="secondary"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-16 h-16 rounded-full glass-morphism border-white/10 hover:bg-white/10 transition-all text-primary"
+                    className="w-16 h-16 rounded-none glass-morphism border-white/10 hover:bg-white/10 transition-all text-primary"
                   >
                     <Upload className="w-8 h-8" />
                   </Button>
@@ -137,7 +160,7 @@ export function PalmScanner() {
 
               {hasCameraPermission === false && (
                 <div className="absolute inset-0 bg-background/80 flex items-center p-8 text-center">
-                  <Alert variant="destructive" className="border-primary/50 bg-primary/10">
+                  <Alert variant="destructive" className="border-primary/50 bg-primary/10 rounded-none">
                     <AlertTitle className="text-primary font-bold">Camera Access Denied</AlertTitle>
                     <AlertDescription className="text-foreground text-xs font-bold">Use the upload button or enable camera access to synchronize your palm with Sankhya.</AlertDescription>
                   </Alert>
@@ -149,13 +172,13 @@ export function PalmScanner() {
               <img src={photo} alt="Captured palm" className="w-full h-full object-cover grayscale brightness-125" />
               <div className="absolute inset-0 bg-primary/10 pointer-events-none" />
               <div className="absolute bottom-6 w-full flex justify-center gap-4 px-6">
-                <Button variant="secondary" onClick={() => {setPhoto(null); setResult(null);}} className="flex-1 rounded-2xl glass-morphism border-white/10 h-14 uppercase font-bold text-xs tracking-widest text-foreground">
+                <Button variant="secondary" onClick={() => {setPhoto(null); setResult(null);}} className="flex-1 rounded-none glass-morphism border-white/10 h-14 uppercase font-bold text-xs tracking-widest text-foreground">
                   <RefreshCcw className="w-4 h-4 mr-2" /> Retake
                 </Button>
                 <Button 
                   onClick={handleProcess} 
                   disabled={isProcessing}
-                  className="flex-1 rounded-2xl bg-primary hover:bg-primary/90 text-background font-black h-14 uppercase text-xs tracking-[0.2em] shadow-[0_0_30px_rgba(var(--primary),0.3)]"
+                  className="flex-1 rounded-none bg-primary hover:bg-primary/90 text-background font-black h-14 uppercase text-xs tracking-[0.2em] shadow-[0_0_30px_rgba(var(--primary),0.3)]"
                 >
                   {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Scan className="w-4 h-4 mr-2" />}
                   {isProcessing ? 'Decoding...' : 'Analyze'}
@@ -171,39 +194,38 @@ export function PalmScanner() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="space-y-6 random-stack-2"
+              className="space-y-6"
             >
               <Card 
                 onClick={() => setIsModalOpen(true)}
-                className="glass-morphism p-8 border-primary/20 bg-primary/5 relative overflow-hidden group cursor-pointer hover:border-primary/50 shadow-2xl rounded-[3rem]"
+                className="glass-morphism p-8 border-primary/20 bg-primary/5 relative overflow-hidden group cursor-pointer hover:border-primary/50 shadow-2xl rounded-none"
               >
                 <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-45 transition-transform duration-700">
                   <Sparkles className="w-16 h-16 text-primary" />
                 </div>
                 <h3 className="text-2xl font-headline font-bold text-primary mb-6 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-none bg-primary/20 flex items-center justify-center">
                     <Scan className="w-5 h-5" />
                   </div>
                   Resonance Report
                 </h3>
-                <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-bold line-clamp-6">
+                <div className="text-sm leading-relaxed text-foreground whitespace-pre-wrap font-bold line-clamp-6 italic">
                   {result}
                 </div>
                 <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary/60 group-hover:text-primary transition-colors pt-6 mt-4 border-t border-white/5">
                   <BookOpen className="w-4 h-4" />
-                  Decode Anatomy breakdown
+                  Decode Line Anatomy
                 </div>
               </Card>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/10 flex gap-4 hover:bg-white/10 transition-colors group">
+              <div className="p-6 rounded-none bg-white/5 border border-white/10 flex gap-4 hover:bg-white/10 transition-colors group">
                 <Info className="w-6 h-6 text-primary shrink-0 group-hover:scale-125 transition-transform" />
                 <p className="text-[10px] uppercase tracking-[0.2em] text-foreground leading-relaxed font-black">
-                  Analysis synthesized via Jyotish & Samudrika Shastra. Tap the report for a full anatomy breakdown.
+                  Analysis saved to history. Synthesized via Jyotish & Samudrika Shastra. Tap for full breakdown.
                 </p>
               </div>
             </motion.div>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center p-12 h-full border-2 border-dashed border-white/10 rounded-[3rem] opacity-50 random-stack-3">
+            <div className="flex flex-col items-center justify-center text-center p-12 h-full border-2 border-dashed border-white/10 rounded-none opacity-50">
               <div className="space-y-6">
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mx-auto border border-white/10 pulse-glow" />
@@ -220,11 +242,11 @@ export function PalmScanner() {
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="glass-morphism border-primary/20 sm:max-w-2xl max-h-[90vh] overflow-hidden rounded-[3rem] p-0">
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-2xl max-h-[90vh] overflow-hidden rounded-none p-0 bg-background/95 backdrop-blur-3xl">
           {result && (
             <div className="flex flex-col h-full">
               <DialogHeader className="p-8 pb-4 space-y-4 shrink-0">
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto border border-primary/20 shadow-2xl">
+                <div className="w-20 h-20 rounded-none bg-primary/10 flex items-center justify-center text-primary mx-auto border border-primary/20 shadow-2xl">
                   <Scan className="w-10 h-10" />
                 </div>
                 <DialogTitle className="font-headline text-3xl font-bold text-center text-primary uppercase tracking-tighter">
@@ -240,7 +262,7 @@ export function PalmScanner() {
                   <h4 className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-sm">
                     <Target className="w-4 h-4" /> Full Interpretation
                   </h4>
-                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
+                  <div className="bg-white/5 p-6 rounded-none border border-white/10">
                     <p className="text-sm text-foreground leading-relaxed font-bold italic">
                       {result}
                     </p>
@@ -249,11 +271,11 @@ export function PalmScanner() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
-                    { label: 'Heart Line', desc: 'Emotional depth and empathy', color: 'text-red-400' },
-                    { label: 'Head Line', desc: 'Logic and decision power', color: 'text-blue-400' },
-                    { label: 'Life Line', desc: 'Vitality and path stability', color: 'text-green-400' }
+                    { label: 'Heart Line', desc: 'Emotional depth', color: 'text-red-400' },
+                    { label: 'Head Line', desc: 'Logic and power', color: 'text-blue-400' },
+                    { label: 'Life Line', desc: 'Vitality and path', color: 'text-green-400' }
                   ].map((line, i) => (
-                    <div key={i} className="bg-white/5 p-4 rounded-2xl border border-white/5 space-y-2">
+                    <div key={i} className="bg-white/5 p-4 rounded-none border border-white/5 space-y-2">
                       <h5 className={`text-[10px] font-black uppercase tracking-widest ${line.color}`}>{line.label}</h5>
                       <p className="text-[11px] text-foreground font-bold">{line.desc}</p>
                     </div>
@@ -264,25 +286,19 @@ export function PalmScanner() {
                   <h4 className="flex items-center gap-2 text-secondary font-black uppercase tracking-widest text-sm">
                     <Zap className="w-4 h-4" /> Strategic Takeaways
                   </h4>
-                  <div className="bg-secondary/10 p-6 rounded-3xl border border-secondary/20">
+                  <div className="bg-secondary/10 p-6 rounded-none border border-secondary/20">
                     <ul className="space-y-3">
                       <li className="flex gap-3 items-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
+                        <Star className="w-3 h-3 text-secondary shrink-0" />
                         <span className="text-xs text-foreground font-bold">Align creative projects with current heart-line resonance.</span>
                       </li>
                       <li className="flex gap-3 items-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
+                        <Star className="w-3 h-3 text-secondary shrink-0" />
                         <span className="text-xs text-foreground font-bold">Strengthen head-line focus through evening meditation.</span>
-                      </li>
-                      <li className="flex gap-3 items-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
-                        <span className="text-xs text-foreground font-bold">Monitor life-line energy flux during planetary shifts.</span>
                       </li>
                     </ul>
                   </div>
                 </section>
-                
-                <div className="h-4" />
               </div>
             </div>
           )}

@@ -30,7 +30,8 @@
         "id": { "type": "string" },
         "title": { "type": "string" },
         "description": { "type": "string" },
-        "type": { "type": "string", "enum": ["color", "music", "action"] },
+        "type": { "type": "string", "enum": ["color", "music", "action", "combined"] },
+        "ritualActions": { "type": "array", "items": { "type": "string" } },
         "timestamp": { "type": "string", "format": "date-time" },
         "completed": { "type": "boolean" },
         "rationale": { "type": "string" }
@@ -44,6 +45,8 @@
         "id": { "type": "string" },
         "type": { "type": "string", "enum": ["palm", "vastu"] },
         "content": { "type": "string" },
+        "remedies": { "type": "array", "items": { "type": "string" } },
+        "balance": { "type": "object" },
         "timestamp": { "type": "string", "format": "date-time" },
         "photoUrl": { "type": "string" }
       }

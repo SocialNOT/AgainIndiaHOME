@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -17,11 +18,12 @@ import { LanguageSelector } from '@/components/navigation/LanguageSelector';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { VibrationDashboard } from '@/components/sankhya/VibrationDashboard';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, Sun, Moon, Orbit, Shield, Zap as Lightning, Target, User, Info, Calendar, Palette, Hash, Star, ArrowUpRight, ShieldAlert, Lightbulb } from 'lucide-react';
+import { MapPin, Zap as Lightning, Target, Star, ArrowUpRight, ShieldAlert, Lightbulb, Info } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useUser, useFirestore, useDoc, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const reduceToSingleDigit = (num: number): number => {
   if (num === 11 || num === 22 || num === 33) return num;
@@ -43,6 +45,7 @@ export default function Home() {
   const [dailyData, setDailyData] = useState<DailySankhyaInsightOutput | null>(null);
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [location, setLocation] = useState({ lat: 25.3176, lon: 82.9739, name: 'Varanasi Pulse' });
+  const [selectedDetail, setSelectedDetail] = useState<{ title: string, content: string[], icon: any, color: string } | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -139,14 +142,13 @@ export default function Home() {
     if (!userProfile?.birthDate) return [];
     const [bYear, bMonth, bDay] = userProfile.birthDate.split('-').map(Number);
     const now = new Date();
-    const themes: Record<number, string> = { 1: 'Init', 2: 'Balance', 3: 'Create', 4: 'Focus', 5: 'Change', 6: 'Nurture', 7: 'Insight', 8: 'Power', 9: 'Release' };
     const forecast = [];
     for (let i = 0; i < 7; i++) {
       const date = new Date();
       date.setDate(now.getDate() + i);
-      const personalYear = reduceToSingleDigit(bMonth + bDay + date.getFullYear());
-      const vibration = reduceToSingleDigit(personalYear + (date.getMonth() + 1) + date.getDate());
-      forecast.push({ day: date.toLocaleDateString(language, { weekday: 'short' }), vibration, theme: themes[vibration] || 'Sync' });
+      const pYear = reduceToSingleDigit(bMonth + bDay + date.getFullYear());
+      const vibration = reduceToSingleDigit(pYear + (date.getMonth() + 1) + date.getDate());
+      forecast.push({ day: date.toLocaleDateString(language, { weekday: 'short' }), vibration });
     }
     return forecast;
   }, [userProfile, language]);
@@ -157,7 +159,7 @@ export default function Home() {
     <main className="relative min-h-screen flex flex-col bg-background selection:bg-primary/30">
       <div className="fixed inset-0 sacred-grid pointer-events-none z-0 opacity-20" />
 
-      <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 glass-morphism border-b border-white/5 bg-background/50 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 glass-morphism border-b border-white/5 bg-background/50 backdrop-blur-xl rounded-none">
         <div className="flex items-center gap-4">
           <h1 className="font-headline text-lg font-bold tracking-tight text-foreground flex items-center gap-1">
             AGAIN <span className="text-primary">INDIA</span>
@@ -198,7 +200,10 @@ export default function Home() {
                     <DailyBriefing data={dailyData} language={language} />
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      <Card className="glass-morphism p-5 space-y-4 border-white/5 hover:border-primary/20 transition-all">
+                      <Card 
+                        onClick={() => setSelectedDetail({ title: 'Strategic Opportunities', content: dailyData?.opportunities || [], icon: ArrowUpRight, color: 'text-secondary' })}
+                        className="glass-morphism p-5 space-y-4 border-white/5 hover:border-primary/20 transition-all cursor-pointer rounded-none"
+                      >
                         <h3 className="text-[9px] font-black text-primary uppercase tracking-[0.2em] flex items-center gap-2">
                           <ArrowUpRight className="w-3 h-3" /> Opportunities
                         </h3>
@@ -208,7 +213,10 @@ export default function Home() {
                           ))}
                         </div>
                       </Card>
-                      <Card className="glass-morphism p-5 space-y-4 border-white/5 hover:border-destructive/20 transition-all">
+                      <Card 
+                        onClick={() => setSelectedDetail({ title: 'Avoidance Protocols', content: dailyData?.thingsToAvoid || [], icon: ShieldAlert, color: 'text-destructive' })}
+                        className="glass-morphism p-5 space-y-4 border-white/5 hover:border-destructive/20 transition-all cursor-pointer rounded-none"
+                      >
                         <h3 className="text-[9px] font-black text-destructive uppercase tracking-[0.2em] flex items-center gap-2">
                           <ShieldAlert className="w-3 h-3" /> Avoid
                         </h3>
@@ -218,7 +226,10 @@ export default function Home() {
                           ))}
                         </div>
                       </Card>
-                      <Card className="glass-morphism p-5 space-y-4 border-white/5 hover:border-accent/20 transition-all">
+                      <Card 
+                        onClick={() => setSelectedDetail({ title: 'Universal Suggestions', content: dailyData?.suggestions || [], icon: Lightbulb, color: 'text-accent' })}
+                        className="glass-morphism p-5 space-y-4 border-white/5 hover:border-accent/20 transition-all cursor-pointer rounded-none"
+                      >
                         <h3 className="text-[9px] font-black text-accent uppercase tracking-[0.2em] flex items-center gap-2">
                           <Lightbulb className="w-3 h-3" /> Suggestions
                         </h3>
@@ -234,22 +245,22 @@ export default function Home() {
                   {/* Right Column: Mini Stats & Forecast */}
                   <div className="lg:col-span-4 space-y-4">
                     <div className="grid grid-cols-2 gap-2">
-                      <Card className="glass-morphism p-4 space-y-2 border-white/5">
+                      <Card className="glass-morphism p-4 space-y-2 border-white/5 rounded-none">
                         <span className="text-[7px] font-black uppercase tracking-widest text-primary">Lucky #</span>
                         <div className="text-3xl font-black text-primary neon-glow">{personalData?.universalDay}</div>
                       </Card>
-                      <Card className="glass-morphism p-4 space-y-2 border-white/5">
+                      <Card className="glass-morphism p-4 space-y-2 border-white/5 rounded-none">
                         <span className="text-[7px] font-black uppercase tracking-widest text-secondary">Power Tone</span>
                         <div className="text-[10px] font-black text-foreground">SAFFRON</div>
                         <div className="w-full h-1 bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
                       </Card>
-                      <Card className="col-span-2 glass-morphism p-4 space-y-2 border-white/5 bg-primary/5">
+                      <Card className="col-span-2 glass-morphism p-4 space-y-2 border-white/5 bg-primary/5 rounded-none">
                         <span className="text-[7px] font-black uppercase tracking-widest text-accent">Active Theme</span>
                         <div className="text-xs font-bold leading-tight">{dailyData?.dailyTheme || 'Syncing Matrix...'}</div>
                       </Card>
                     </div>
 
-                    <Card className="glass-morphism p-5 space-y-6 border-white/5">
+                    <Card className="glass-morphism p-5 space-y-6 border-white/5 rounded-none">
                       <div className="flex justify-between items-center">
                         <h3 className="text-[9px] font-black text-foreground/50 uppercase tracking-[0.3em]">7-Day Forecast</h3>
                         <Lightning className="w-3 h-3 text-primary animate-pulse" />
@@ -266,14 +277,14 @@ export default function Home() {
                       </div>
                     </Card>
 
-                    <Card className="glass-morphism p-5 space-y-4 border-white/5 bg-secondary/5">
+                    <Card className="glass-morphism p-5 space-y-4 border-white/5 bg-secondary/5 rounded-none">
                       <h3 className="text-[9px] font-black text-secondary uppercase tracking-[0.3em]">Protocol Remedy</h3>
                       <div className="space-y-4">
                         <div className="flex gap-3">
                           <Lightning className="w-4 h-4 text-secondary shrink-0" />
                           <p className="text-[10px] font-bold leading-tight">North-East alignment recommended for high-frequency clarity.</p>
                         </div>
-                        <Button onClick={() => setActiveTab('rituals')} variant="outline" className="w-full h-8 text-[8px] font-black uppercase tracking-[0.2em] border-secondary/20 hover:bg-secondary/10">
+                        <Button onClick={() => setActiveTab('rituals')} variant="outline" className="w-full h-8 text-[8px] font-black uppercase tracking-[0.2em] border-secondary/20 hover:bg-secondary/10 rounded-none">
                           Full Protocol →
                         </Button>
                       </div>
@@ -283,7 +294,7 @@ export default function Home() {
                   {/* Bottom Row: Graph and Deep Analysis */}
                   <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <LifeGraph />
-                    <Card className="glass-morphism p-8 space-y-6 border-white/5 flex flex-col justify-center items-center text-center">
+                    <Card className="glass-morphism p-8 space-y-6 border-white/5 flex flex-col justify-center items-center text-center rounded-none">
                       <div className="space-y-2">
                         <h3 className="text-2xl font-black text-primary uppercase tracking-tighter">Strategic Analysis</h3>
                         <p className="text-[9px] font-bold text-foreground/40 uppercase tracking-widest">Life Cycle Diagnostic</p>
@@ -291,7 +302,7 @@ export default function Home() {
                       <p className="text-base sm:text-lg font-bold leading-relaxed italic max-w-md">
                         "Your current frequency suggests a phase of <span className="text-primary">Radical Expansion</span>. Synchronize your internal grid with the 8-cycle."
                       </p>
-                      <Button variant="outline" onClick={() => setActiveTab('calculator')} className="w-full max-w-sm text-[10px] font-bold uppercase tracking-widest h-12 border-white/10">
+                      <Button variant="outline" onClick={() => setActiveTab('calculator')} className="w-full max-w-sm text-[10px] font-bold uppercase tracking-widest h-12 border-white/10 rounded-none">
                         View Complete Breakdown →
                       </Button>
                     </Card>
@@ -299,7 +310,6 @@ export default function Home() {
                 </div>
               )}
               
-              {/* Other Modules */}
               <div className="w-full">
                 {activeTab === 'chat' && <QueryInterface userProfile={userProfile} language={language} />}
                 {activeTab === 'palm' && <PalmScanner />}
@@ -316,6 +326,40 @@ export default function Home() {
       <UserBirthModal isOpen={showOnboarding} onComplete={handleOnboardingComplete} onCancel={() => setShowOnboarding(false)} />
       
       {!isLanding && <GlassDock activeTab={activeTab} onTabChange={setActiveTab} />}
+
+      <Dialog open={!!selectedDetail} onOpenChange={() => setSelectedDetail(null)}>
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-lg p-0 overflow-hidden bg-background/95 backdrop-blur-3xl rounded-none">
+          {selectedDetail && (
+            <div className="p-8 space-y-6">
+              <DialogHeader className="space-y-4">
+                <div className={`w-16 h-16 bg-white/5 flex items-center justify-center ${selectedDetail.color} mx-auto border border-white/5 shadow-2xl`}>
+                  <selectedDetail.icon className="w-8 h-8" />
+                </div>
+                <DialogTitle className="font-headline text-3xl font-bold text-center text-primary uppercase tracking-tighter">
+                  {selectedDetail.title}
+                </DialogTitle>
+                <DialogDescription className="text-center text-foreground font-black uppercase tracking-widest text-[10px] opacity-60">
+                  Detailed Cosmic Diagnostic
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                {selectedDetail.content.map((item, i) => (
+                  <div key={i} className="p-4 bg-white/5 border border-white/5 flex items-center gap-4 group hover:bg-white/10 transition-all">
+                    <div className={`w-1.5 h-1.5 shrink-0 rounded-full ${selectedDetail.color} animate-pulse`} />
+                    <p className="text-xs font-bold leading-relaxed">{item}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="p-4 bg-primary/5 border border-primary/10 flex gap-3 items-center">
+                <Info className="w-4 h-4 text-primary shrink-0" />
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-70">
+                  Synthesized via Sankhya V2.5 Intelligence Core.
+                </p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       
       <footer className="fixed bottom-0 left-0 right-0 z-[60] h-6 flex items-center justify-between px-4 bg-background border-t border-white/5 pointer-events-none text-[7px] font-bold uppercase tracking-[0.3em] opacity-30">
         <span>Made in 🇮🇳</span>
