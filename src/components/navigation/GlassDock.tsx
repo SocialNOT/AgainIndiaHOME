@@ -71,18 +71,18 @@ export function GlassDock({ activeTab, onTabChange }: { activeTab: string, onTab
           rel="noopener noreferrer" 
           className="group inline-flex flex-wrap items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-background/40 backdrop-blur-xl border border-white/5 hover:border-primary/40 hover:bg-white/5 transition-all duration-500 shadow-2xl"
         >
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
-            Made in India
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
+            Made in
           </span>
-          <span className="text-sm animate-flag-wave inline-block">🇮🇳</span>
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
-            with
+          <span className="text-lg animate-flag-wave inline-block">🇮🇳</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
+            With
           </span>
-          <Heart className="w-3.5 h-3.5 animate-heart-chroma fill-current" />
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
-            love by
+          <Heart className="w-4 h-4 animate-heart-chroma fill-current" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
+            by
           </span>
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover:neon-glow">
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary group-hover:neon-glow">
             Rajib Singh
           </span>
         </a>
