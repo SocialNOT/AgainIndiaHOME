@@ -6,6 +6,7 @@ import { Sparkles, Calendar, Zap, Target, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
+import { getTranslation } from '@/lib/translations';
 import {
   Dialog,
   DialogContent,
@@ -14,8 +15,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-export function DailyBriefing({ data }: { data: DailySankhyaInsightOutput | null }) {
+export function DailyBriefing({ data, language }: { data: DailySankhyaInsightOutput | null, language: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = (key: string) => getTranslation(language, key);
 
   if (!data) return null;
 
@@ -29,11 +31,11 @@ export function DailyBriefing({ data }: { data: DailySankhyaInsightOutput | null
         <div className="flex items-center justify-between px-4">
           <h2 className="font-headline text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-3">
             <Sparkles className="text-primary animate-pulse" />
-            Morning Frequency
+            {t('daily_briefing_title')}
           </h2>
           <div className="text-[10px] text-foreground font-black flex items-center gap-2 bg-white/5 px-3 py-1 rounded-full uppercase tracking-widest border border-white/10">
             <Calendar className="w-3 h-3" />
-            {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+            {new Date().toLocaleDateString(language, { weekday: 'short', month: 'short', day: 'numeric' })}
           </div>
         </div>
 

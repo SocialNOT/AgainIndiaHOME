@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -8,15 +9,18 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { directSankhyaQuery } from '@/ai/flows/direct-sankhya-query-flow';
+import { getTranslation } from '@/lib/translations';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export function QueryInterface({ userProfile }: { userProfile: any }) {
+export function QueryInterface({ userProfile, language }: { userProfile: any, language: string }) {
+  const t = (key: string) => getTranslation(language, key);
+  
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: "I am Sankhya. How can the mathematics of the universe serve you today?" }
+    { role: 'assistant', content: language === 'bn' ? "আমি সাংখ্য। আজ মহাবিশ্বের গণিত আপনার জন্য কীভাবে সাহায্য করতে পারে?" : "I am Sankhya. How can the mathematics of the universe serve you today?" }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -61,8 +65,8 @@ export function QueryInterface({ userProfile }: { userProfile: any }) {
             <Bot className="w-6 h-6 text-background" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-accent">Sankhya Speak</h3>
-            <span className="text-[10px] text-green-400 uppercase tracking-widest">Active Resonance</span>
+            <h3 className="font-headline font-bold text-accent">{t('sankhya_speak_title')}</h3>
+            <span className="text-[10px] text-green-400 uppercase tracking-widest">{t('active_resonance')}</span>
           </div>
         </div>
       </div>
@@ -89,7 +93,7 @@ export function QueryInterface({ userProfile }: { userProfile: any }) {
             <div className="flex justify-start">
               <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin text-accent" />
-                <span className="text-xs text-muted-foreground italic">Sankhya is reasoning...</span>
+                <span className="text-xs text-muted-foreground italic">{t('loading_sankhya')}</span>
               </div>
             </div>
           )}
@@ -106,7 +110,7 @@ export function QueryInterface({ userProfile }: { userProfile: any }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask anything..."
+            placeholder={t('ask_anything')}
             className="flex-1 bg-white/5 border-white/10 focus-visible:ring-accent"
           />
           <Button 

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Provides a comprehensive daily insight based on user birth details, current location,
@@ -20,6 +21,7 @@ const DailySankhyaInsightInputSchema = z.object({
   currentLongitude: z.number().describe("The user's current longitude."),
   currentTimezoneOffset: z.number().describe("The user's current timezone offset from UTC in minutes."),
   currentDateTime: z.string().describe("The current date and time in YYYY-MM-DDTHH:MM:SS format."),
+  language: z.string().optional().describe("The language for the response (e.g., 'bn' for Bengali, 'en' for English)."),
 });
 export type DailySankhyaInsightInput = z.infer<typeof DailySankhyaInsightInputSchema>;
 
@@ -55,8 +57,6 @@ async function getMockPlanetaryPositions(
     hour12: false,
   });
 
-  // Simulate complex calculations based on date, time, and location
-  // For a real app, this would involve a robust ephemeris library or API.
   const mockPositions = [
     'Sun in Aries (ambition, new beginnings)',
     'Moon in Cancer (emotional sensitivity, nurturing)',
@@ -92,6 +92,8 @@ const dailySankhyaInsightPrompt = ai.definePrompt({
   output: { schema: DailySankhyaInsightOutputSchema },
   prompt: `You are Sankhya, a highly intelligent reasoning engine specializing in Pythagorean and Chaldean Numerology, Vedic Astrology (Jyotish), and Vastu Shastra. Your purpose is to provide profound daily insights.
 
+IMPORTANT: Provide the response in the language specified: {{{language}}}. If the language is 'bn', use Bengali. If 'hi', use Hindi. Default to English if not specified or understood.
+
 Integrate all provided information to synthesize a comprehensive daily insight, energetic alignment, daily themes, and specific micro-rituals.
 
 User Profile:
@@ -120,7 +122,6 @@ const dailySankhyaInsightFlow = ai.defineFlow(
   async (input) => {
     const currentDateTimeObj = new Date(input.currentDateTime);
 
-    // Fetch or mock real-time planetary and astrological data
     const planetaryAndAstrologicalData = await getMockPlanetaryPositions(
       input.currentLatitude,
       input.currentLongitude,

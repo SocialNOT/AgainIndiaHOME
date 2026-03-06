@@ -5,6 +5,7 @@ import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Zap, Target, Sparkles, Star, History, Info, BookOpen, Orbit } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { getTranslation } from '@/lib/translations';
 import {
   Dialog,
   DialogContent,
@@ -23,10 +24,12 @@ const reduceToSingleDigit = (num: number): number => {
 
 interface VibrationDashboardProps {
   userProfile: any;
+  language: string;
 }
 
-export function VibrationDashboard({ userProfile }: VibrationDashboardProps) {
+export function VibrationDashboard({ userProfile, language }: VibrationDashboardProps) {
   const [selectedVibration, setSelectedVibration] = useState<any>(null);
+  const t = (key: string) => getTranslation(language, key);
 
   const vibrations = useMemo(() => {
     if (!userProfile?.birthDate) return [];
@@ -106,11 +109,11 @@ export function VibrationDashboard({ userProfile }: VibrationDashboardProps) {
         
         <div className="relative z-10 flex flex-col items-center text-center space-y-12">
           <div className="space-y-4">
-            <h2 className="text-4xl sm:text-6xl font-headline font-black tracking-tighter text-foreground uppercase">
-              Vibration <span className="text-primary neon-glow">Signature</span>
+            <h2 className="text-3xl sm:text-6xl font-headline font-black tracking-tighter text-foreground uppercase">
+              {t('vibration_title').split(' ')[0]} <span className="text-primary neon-glow">{t('vibration_title').split(' ')[1] || ''}</span>
             </h2>
             <p className="text-xs sm:text-sm font-bold text-foreground/70 uppercase tracking-[0.4em] max-w-xl">
-              Decoding the mathematical blueprint of your incarnation.
+              {t('vibration_subtitle')}
             </p>
           </div>
 

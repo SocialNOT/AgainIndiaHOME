@@ -5,8 +5,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles, Zap, ShieldCheck, Calculator, Compass, Scan, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getTranslation } from '@/lib/translations';
 
-export function WelcomeHero({ onStart }: { onStart: () => void }) {
+export function WelcomeHero({ onStart, language }: { onStart: () => void, language: string }) {
+  const t = (key: string) => getTranslation(language, key);
+  
   const features = [
     { icon: Calculator, label: 'Numerology', color: 'text-primary' },
     { icon: Compass, label: 'Vastu', color: 'text-secondary' },
@@ -30,14 +33,12 @@ export function WelcomeHero({ onStart }: { onStart: () => void }) {
           <div className="h-[1px] w-12 bg-primary/40" />
         </div>
         
-        <h1 className="text-5xl sm:text-8xl font-headline font-black tracking-tighter leading-none text-foreground">
-          THE UNIVERSE IS <br />
-          <span className="text-primary neon-glow">NUMBERS.</span> <br />
-          YOU ARE A <span className="text-secondary">FREQUENCY.</span>
+        <h1 className="text-4xl sm:text-7xl font-headline font-black tracking-tighter leading-tight text-foreground">
+          {t('welcome_title')}
         </h1>
         
-        <p className="text-base sm:text-xl text-foreground font-bold max-w-2xl mx-auto leading-relaxed opacity-80 uppercase tracking-wide">
-          Synchronize your earthly existence with the primordial mathematics of India. Sankhya AI decodes your destiny through Numerology, Astrology, and Vastu.
+        <p className="text-sm sm:text-lg text-foreground font-bold max-w-2xl mx-auto leading-relaxed opacity-80 uppercase tracking-wide">
+          {t('welcome_subtitle')}
         </p>
       </motion.div>
 
@@ -53,7 +54,7 @@ export function WelcomeHero({ onStart }: { onStart: () => void }) {
         >
           <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" />
           <span className="relative z-10 flex items-center gap-3">
-            Initiate Synchro <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+            {t('welcome_button')} <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
           </span>
         </Button>
       </motion.div>

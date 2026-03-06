@@ -20,6 +20,7 @@ import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily
 import { MapPin, Sparkles, Star, Sun, Moon, Orbit, Shield, Zap as Lightning, Target, History } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { getTranslation } from '@/lib/translations';
 
 const reduceToSingleDigit = (num: number): number => {
   if (num === 11 || num === 22 || num === 33) return num;
@@ -39,6 +40,8 @@ export default function Home() {
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [location, setLocation] = useState({ lat: 25.3176, lon: 82.9739, name: 'Varanasi Pulse' });
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
+
+  const t = (key: string) => getTranslation(language, key);
 
   // Reset scroll on module change
   useEffect(() => {
@@ -71,6 +74,10 @@ export default function Home() {
 
   useEffect(() => {
     localStorage.setItem('again-india-lang', language);
+    // Refetch insight if language changes to get AI response in correct language
+    if (userProfile) {
+      fetchDailyInsight();
+    }
   }, [language]);
 
   useEffect(() => {
@@ -91,7 +98,8 @@ export default function Home() {
         currentLatitude: location.lat,
         currentLongitude: location.lon,
         currentTimezoneOffset: new Date().getTimezoneOffset(),
-        currentDateTime: new Date().toISOString()
+        currentDateTime: new Date().toISOString(),
+        language: language // Pass language to AI flow
       });
       setDailyData(insight);
     } catch (error) {
@@ -218,7 +226,7 @@ export default function Home() {
       <div className="flex-1 w-full max-w-7xl mx-auto px-6 pt-28 pb-40 relative z-10">
         <AnimatePresence mode="wait">
           {isLanding ? (
-            <WelcomeHero key="landing" onStart={() => setShowOnboarding(true)} />
+            <WelcomeHero key="landing" onStart={() => setShowOnboarding(true)} language={language} />
           ) : (
             <>
               {activeTab === 'home' && (
@@ -231,7 +239,7 @@ export default function Home() {
                 >
                   {/* Catchy Personalized Resonance Section */}
                   <section className="relative w-full flex flex-col items-center">
-                    <VibrationDashboard userProfile={userProfile} />
+                    <VibrationDashboard userProfile={userProfile} language={language} />
                     
                     {/* Celestial Events Grid: Icons on Mobile, Details on Desktop */}
                     <motion.div 
@@ -261,7 +269,7 @@ export default function Home() {
                   {/* Dashboard Grid */}
                   <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 sm:gap-12 items-start">
                     <div className="xl:col-span-3">
-                      <DailyBriefing data={dailyData} />
+                      <DailyBriefing data={dailyData} language={language} />
                     </div>
                     <div className="xl:col-span-2 space-y-8">
                       <div className="random-stack-2">
@@ -289,11 +297,11 @@ export default function Home() {
               )}
 
               <div className="w-full">
-                {activeTab === 'chat' && <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><QueryInterface userProfile={userProfile} /></motion.div>}
-                {activeTab === 'palm' && <motion.div key="palm" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><PalmScanner /></motion.div>}
-                {activeTab === 'rituals' && <motion.div key="rituals" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><RitualGenerator userProfile={userProfile} /></motion.div>}
-                {activeTab === 'compass' && <motion.div key="compass" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><VastuCompass /></motion.div>}
-                {activeTab === 'calculator' && <motion.div key="calculator" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><NumerologyCalculator userProfile={userProfile} /></motion.div>}
+                {activeTab === 'chat' && <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><QueryInterface userProfile={userProfile} language={language} /></motion.div>}
+                {activeTab === 'palm' && <motion.div key="palm" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><PalmScanner language={language} /></motion.div>}
+                {activeTab === 'rituals' && <motion.div key="rituals" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><RitualGenerator userProfile={userProfile} language={language} /></motion.div>}
+                {activeTab === 'compass' && <motion.div key="compass" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><VastuCompass language={language} /></motion.div>}
+                {activeTab === 'calculator' && <motion.div key="calculator" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><NumerologyCalculator userProfile={userProfile} language={language} /></motion.div>}
               </div>
             </>
           )}
