@@ -179,3 +179,21 @@
   to { transform: rotate(360deg); }
 }
 .animate-spin-very-slow { animation: spin-slow 60s linear infinite; }
+
+@keyframes flag-wave {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2deg) translateY(-2px); }
+}
+.animate-flag-wave {
+  animation: flag-wave 2s ease-in-out infinite;
+}
+
+@keyframes heart-chroma {
+  0% { color: #ff9933; transform: scale(1); filter: drop-shadow(0 0 5px #ff9933); }
+  33% { color: #ffffff; transform: scale(1.2); filter: drop-shadow(0 0 8px #ffffff); }
+  66% { color: #138808; transform: scale(1); filter: drop-shadow(0 0 5px #138808); }
+  100% { color: #ff9933; transform: scale(1); filter: drop-shadow(0 0 5px #ff9933); }
+}
+.animate-heart-chroma {
+  animation: heart-chroma 2s linear infinite;
+}

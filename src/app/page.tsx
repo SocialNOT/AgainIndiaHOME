@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -16,7 +15,7 @@ import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator'
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, MessageSquare, Sparkles, Zap, Bot } from 'lucide-react';
+import { MapPin, MessageSquare, Sparkles, Zap, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 export default function Home() {
@@ -92,7 +91,7 @@ export default function Home() {
   const isLanding = !userProfile;
 
   return (
-    <main className="relative min-h-screen bg-cosmic flex flex-col overflow-x-hidden">
+    <main className="relative min-h-screen flex flex-col overflow-x-hidden">
       {/* Dynamic Sacred Grid */}
       <div className="fixed inset-0 sacred-grid pointer-events-none z-0 opacity-40" />
 
@@ -224,6 +223,31 @@ export default function Home() {
             </>
           )}
         </AnimatePresence>
+
+        {/* Footer Credit */}
+        <footer className="mt-24 pb-12 text-center">
+          <a 
+            href="https://www.eastindiaautomation.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="group inline-flex flex-wrap items-center justify-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:border-primary/40 hover:bg-white/10 transition-all duration-500"
+          >
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-foreground/70 group-hover:text-foreground">
+              Made in India
+            </span>
+            <span className="text-lg animate-flag-wave inline-block">🇮🇳</span>
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-foreground/70 group-hover:text-foreground">
+              with
+            </span>
+            <Heart className="w-4 h-4 animate-heart-chroma fill-current" />
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-foreground/70 group-hover:text-foreground">
+              love by
+            </span>
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary group-hover:neon-glow">
+              Rajib Singh
+            </span>
+          </a>
+        </footer>
       </div>
 
       <UserBirthModal isOpen={showOnboarding} onComplete={handleOnboardingComplete} onCancel={() => setShowOnboarding(false)} />
