@@ -220,27 +220,6 @@ export default function Home() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12 sm:space-y-16"
                 >
-                  {/* Catchy One-Liner Chat CTA */}
-                  <div className="flex justify-center w-full">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveTab('chat')}
-                      className="group relative flex items-center gap-4 bg-white/5 backdrop-blur-xl border border-primary/40 px-6 py-4 rounded-full overflow-hidden transition-all hover:border-primary hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] max-w-2xl w-full"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                        <MessageSquare className="w-5 h-5 text-primary group-hover:animate-bounce" />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <span className="text-sm sm:text-base font-headline font-bold text-foreground opacity-90 group-hover:opacity-100">
-                          "Sankhya, what do the numbers say about my next 24 hours?"
-                        </span>
-                      </div>
-                      <Zap className="w-4 h-4 text-secondary animate-pulse" />
-                    </motion.button>
-                  </div>
-
                   {/* Central Interactive Orrery */}
                   <section className="relative w-full flex flex-col items-center">
                     <CelestialOrb userProfile={userProfile} lifePath={personalData?.lifePath} />
