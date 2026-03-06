@@ -13,6 +13,7 @@ import { RitualGenerator } from '@/components/sankhya/RitualGenerator';
 import { VastuCompass } from '@/components/sankhya/VastuCompass';
 import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator';
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
+import { LanguageSelector } from '@/components/navigation/LanguageSelector';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { VibrationDashboard } from '@/components/sankhya/VibrationDashboard';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
@@ -31,6 +32,7 @@ const reduceToSingleDigit = (num: number): number => {
 export default function Home() {
   const [activeTab, setActiveTab] = useState('home');
   const [theme, setTheme] = useState('cyber');
+  const [language, setLanguage] = useState('en');
   const [userProfile, setUserProfile] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [dailyData, setDailyData] = useState<DailySankhyaInsightOutput | null>(null);
@@ -46,8 +48,10 @@ export default function Home() {
   useEffect(() => {
     const saved = localStorage.getItem('again-india-profile');
     const savedTheme = localStorage.getItem('again-india-theme');
+    const savedLang = localStorage.getItem('again-india-lang');
     if (saved) setUserProfile(JSON.parse(saved));
     if (savedTheme) setTheme(savedTheme || 'cyber');
+    if (savedLang) setLanguage(savedLang);
 
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((pos) => {
@@ -64,6 +68,10 @@ export default function Home() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('again-india-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('again-india-lang', language);
+  }, [language]);
 
   useEffect(() => {
     if (userProfile && !dailyData && !isLoadingInsight) {
@@ -191,6 +199,7 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-4">
+          <LanguageSelector currentLang={language} onLangChange={setLanguage} />
           <ThemeToggle currentTheme={theme} onThemeChange={setTheme} />
           {!isLanding && (
             <motion.div 
