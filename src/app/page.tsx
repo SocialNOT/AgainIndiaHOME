@@ -17,7 +17,7 @@ import { LanguageSelector } from '@/components/navigation/LanguageSelector';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { VibrationDashboard } from '@/components/sankhya/VibrationDashboard';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, Sparkles, Star, Sun, Moon, Orbit, Shield, Zap as Lightning, Target, History, User, LogOut, Info } from 'lucide-react';
+import { MapPin, Sparkles, Star, Sun, Moon, Orbit, Shield, Zap as Lightning, Target, History, User, LogOut, Info, Calendar, Palette, Hash, Activity } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { getTranslation } from '@/lib/translations';
@@ -146,6 +146,16 @@ export default function Home() {
     { label: 'Saturn Hold', icon: Shield, value: 'Aquarius Zone', impact: 'Karmic Structure', color: 'text-accent', details: 'Innovation through discipline.' },
   ];
 
+  const weeklyForecast = [
+    { day: 'Mon', vibration: 3, theme: 'Expression' },
+    { day: 'Tue', vibration: 7, theme: 'Reflection' },
+    { day: 'Wed', vibration: 1, theme: 'Ambition' },
+    { day: 'Thu', vibration: 5, theme: 'Adventure' },
+    { day: 'Fri', vibration: 9, theme: 'Completion' },
+    { day: 'Sat', vibration: 2, theme: 'Harmony' },
+    { day: 'Sun', vibration: 8, theme: 'Power' },
+  ];
+
   const isLanding = !user || !userProfile;
 
   return (
@@ -194,6 +204,8 @@ export default function Home() {
                 <motion.div key="home" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-12 sm:space-y-16">
                   <section className="relative w-full flex flex-col items-center">
                     <VibrationDashboard userProfile={userProfile} language={language} />
+                    
+                    {/* Celestial Events Pulse */}
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8 w-full max-w-4xl grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-4 sm:px-0 z-20">
                       {celestialEvents.map((item, i) => (
                         <Card key={i} onClick={() => setSelectedEvent(item)} className="glass-morphism border-none p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-1 group hover:scale-110 transition-all cursor-pointer relative overflow-hidden aspect-square sm:aspect-auto sm:h-28 rounded-xl sm:rounded-[2rem]">
@@ -207,6 +219,63 @@ export default function Home() {
                     </motion.div>
                   </section>
 
+                  {/* 7-Day Forecast & Resonance Grid */}
+                  <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <Card className="lg:col-span-2 glass-morphism border-none p-8 rounded-[3rem] space-y-6">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-headline font-bold text-primary flex items-center gap-2">
+                          <Calendar className="w-5 h-5" /> 7-Day Vibration Forecast
+                        </h3>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-foreground/40">Weekly Sync Matrix</span>
+                      </div>
+                      <div className="flex justify-between items-end h-40 gap-2">
+                        {weeklyForecast.map((day, i) => (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
+                            <div className="w-full bg-white/5 rounded-t-xl relative overflow-hidden flex items-end justify-center" style={{ height: `${day.vibration * 10}%` }}>
+                              <motion.div 
+                                initial={{ height: 0 }}
+                                animate={{ height: '100%' }}
+                                transition={{ delay: i * 0.1, duration: 1 }}
+                                className="w-full bg-gradient-to-t from-primary/40 to-primary/10" 
+                              />
+                              <span className="absolute top-2 text-[10px] font-black text-primary opacity-0 group-hover:opacity-100 transition-opacity">{day.vibration}</span>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-[10px] font-black uppercase text-foreground">{day.day}</p>
+                              <p className="text-[8px] font-bold text-foreground/40 uppercase hidden sm:block">{day.theme}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <Card className="glass-morphism border-none p-6 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-2 group hover:scale-105 transition-all">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-1">
+                          <Hash className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-foreground/60">Lucky Number</h4>
+                        <p className="text-3xl font-headline font-black text-primary">{personalData?.universalDay}</p>
+                      </Card>
+                      <Card className="glass-morphism border-none p-6 rounded-[2.5rem] flex flex-col items-center justify-center text-center gap-2 group hover:scale-105 transition-all">
+                        <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary mb-1">
+                          <Palette className="w-5 h-5" />
+                        </div>
+                        <h4 className="text-[9px] font-black uppercase tracking-widest text-foreground/60">Power Color</h4>
+                        <p className="text-xs font-black text-secondary uppercase tracking-tighter">Saffron Gold</p>
+                      </Card>
+                      <Card className="col-span-2 glass-morphism border-none p-6 rounded-[2.5rem] flex items-center gap-6 group hover:bg-white/5 transition-all">
+                        <div className="w-14 h-14 rounded-2xl bg-accent/20 flex items-center justify-center text-accent shrink-0">
+                          <Lightning className="w-7 h-7" />
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="text-[9px] font-black uppercase tracking-widest text-foreground/60">Active Remedy</h4>
+                          <p className="text-xs font-bold text-foreground leading-relaxed">Align your workspace North-East for mental clarity today.</p>
+                        </div>
+                      </Card>
+                    </div>
+                  </section>
+
                   <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 sm:gap-12 items-start">
                     <div className="xl:col-span-3">
                       <DailyBriefing data={dailyData} language={language} />
@@ -214,11 +283,14 @@ export default function Home() {
                     <div className="xl:col-span-2 space-y-8">
                       <LifeGraph />
                       <Card className="glass-morphism rounded-[2.5rem] p-8 flex flex-col justify-center gap-6 border-none relative overflow-hidden group random-stack-1 hover:scale-105 transition-all">
+                        <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:rotate-12 transition-transform">
+                          <Activity className="w-32 h-32" />
+                        </div>
                         <h3 className="text-2xl font-headline font-bold text-primary">Transit Weaver</h3>
                         <p className="text-base text-foreground font-bold leading-relaxed">
-                          Your current cycle aligns with a <span className="text-primary underline">Personal Year {personalData?.personalYear}</span>.
+                          Your current cycle aligns with a <span className="text-primary underline">Personal Year {personalData?.personalYear}</span>. This is a phase of {personalData?.personalYear === 1 ? 'radical new beginnings' : 'deep completion'}.
                         </p>
-                        <button onClick={() => setActiveTab('calculator')} className="w-fit px-0 py-2 text-sm font-black uppercase tracking-[0.2em] text-primary flex items-center gap-3">
+                        <button onClick={() => setActiveTab('calculator')} className="w-fit px-0 py-2 text-sm font-black uppercase tracking-[0.2em] text-primary flex items-center gap-3 group-hover:gap-5 transition-all">
                           Analyze Matrix <span>→</span>
                         </button>
                       </Card>
