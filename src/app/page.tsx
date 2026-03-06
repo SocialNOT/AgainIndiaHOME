@@ -19,8 +19,8 @@ import { VibrationDashboard } from '@/components/sankhya/VibrationDashboard';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
 import { MapPin, Sun, Moon, Orbit, Shield, Zap as Lightning, Target, User, Info, Calendar, Palette, Hash, Star, ArrowUpRight, ShieldAlert, Lightbulb } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { useUser, useFirestore, useDoc } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useUser, useFirestore, useDoc, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 
 const reduceToSingleDigit = (num: number): number => {
@@ -70,15 +70,39 @@ export default function Home() {
 
   useEffect(() => {
     localStorage.setItem('again-india-lang', language);
-    if (userProfile) fetchDailyInsight();
+    if (userProfile?.name && userProfile?.birthDate) fetchDailyInsight();
   }, [language]);
 
   useEffect(() => {
-    if (userProfile && !dailyData && !isLoadingInsight) fetchDailyInsight();
+    if (userProfile?.name && userProfile?.birthDate && !dailyData && !isLoadingInsight) {
+      fetchDailyInsight();
+    }
   }, [userProfile, location]);
 
+  const handleOnboardingComplete = async (data: any) => {
+    if (!user) return;
+    const userRef = doc(db, 'users', user.uid);
+    const updatePayload = {
+      ...data,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    setDoc(userRef, updatePayload, { merge: true })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: userRef.path,
+          operation: 'write',
+          requestResourceData: updatePayload,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
+      
+    setShowOnboarding(false);
+  };
+
   const fetchDailyInsight = async () => {
-    if (!userProfile) return;
+    if (!userProfile?.name || !userProfile?.birthDate || !userProfile?.birthPlace) return;
+    
     setIsLoadingInsight(true);
     try {
       const insight = await dailySankhyaInsight({
@@ -128,7 +152,7 @@ export default function Home() {
     return forecast;
   }, [userProfile, language]);
 
-  const isLanding = !user || !userProfile;
+  const isLanding = !user || !userProfile?.name;
 
   return (
     <main className="relative min-h-screen flex flex-col bg-background">
@@ -170,12 +194,10 @@ export default function Home() {
                   <VibrationDashboard userProfile={userProfile} language={language} />
                   
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                    {/* Main Daily Card */}
                     <div className="lg:col-span-8">
                       <DailyBriefing data={dailyData} language={language} />
                     </div>
 
-                    {/* Quick Stats Grid */}
                     <div className="lg:col-span-4 grid grid-cols-2 gap-2">
                       <Card className="glass-morphism p-4 space-y-2 border-white/5">
                         <span className="text-[7px] font-black uppercase tracking-widest text-primary">Lucky #</span>
@@ -287,11 +309,10 @@ export default function Home() {
         </AnimatePresence>
       </div>
 
-      <UserBirthModal isOpen={showOnboarding} onComplete={() => setShowOnboarding(false)} onCancel={() => setShowOnboarding(false)} />
+      <UserBirthModal isOpen={showOnboarding} onComplete={handleOnboardingComplete} onCancel={() => setShowOnboarding(false)} />
       
       {!isLanding && <GlassDock activeTab={activeTab} onTabChange={setActiveTab} />}
       
-      {/* Footer Branding */}
       <footer className="fixed bottom-0 left-0 right-0 z-[60] h-6 flex items-center justify-between px-4 bg-background border-t border-white/5 pointer-events-none text-[7px] font-bold uppercase tracking-[0.3em] opacity-30">
         <span>Made in 🇮🇳</span>
         <span>Rajib Singh Sync</span>
