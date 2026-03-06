@@ -16,7 +16,7 @@ import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator'
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, MessageSquare, Sparkles, Zap, Heart, Star, TrendingUp, Calendar, Sun, Moon, Orbit, Shield, Zap as Lightning } from 'lucide-react';
+import { MapPin, MessageSquare, Sparkles, Zap, Star, Sun, Moon, Orbit, Shield, Zap as Lightning } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const reduceToSingleDigit = (num: number): number => {
@@ -97,7 +97,6 @@ export default function Home() {
     setShowOnboarding(false);
   };
 
-  // Personalized Numerology Hooks
   const personalData = useMemo(() => {
     if (!userProfile?.birthDate) return null;
     const now = new Date();
@@ -112,7 +111,6 @@ export default function Home() {
     return { lifePath, personalYear, personalMonth, universalDay };
   }, [userProfile]);
 
-  // Mock Celestial Events for the 2x3 Grid
   const celestialEvents = [
     { label: 'Sun Path', value: 'Aries Transit', icon: Sun, impact: 'High Vitality', color: 'text-primary' },
     { label: 'Moon Phase', value: 'Waxing Crescent', icon: Moon, impact: 'Internal Growth', color: 'text-secondary' },
@@ -126,10 +124,8 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen flex flex-col overflow-x-hidden">
-      {/* Dynamic Sacred Grid */}
       <div className="fixed inset-0 sacred-grid pointer-events-none z-0 opacity-40" />
 
-      {/* Top Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center justify-between px-6 sm:px-12 backdrop-blur-2xl bg-background/60 border-b border-white/5">
         <div className="flex items-center gap-6">
           <motion.div
@@ -166,7 +162,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Content Canvas */}
       <div className="flex-1 w-full max-w-7xl mx-auto px-6 pt-28 pb-40 relative z-10">
         <AnimatePresence mode="wait">
           {isLanding ? (
@@ -181,23 +176,24 @@ export default function Home() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12 sm:space-y-16"
                 >
-                  {/* Chat CTA One-Liner */}
+                  {/* Catchy One-Liner Chat CTA */}
                   <div className="flex justify-center w-full">
                     <motion.button
-                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setActiveTab('chat')}
-                      className="group relative flex items-center gap-4 bg-white/5 backdrop-blur-xl border border-primary/40 px-6 py-5 rounded-2xl overflow-hidden transition-all hover:border-primary hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] max-w-3xl w-full"
+                      className="group relative flex items-center gap-4 bg-white/5 backdrop-blur-xl border border-primary/40 px-6 py-4 rounded-full overflow-hidden transition-all hover:border-primary hover:shadow-[0_0_40px_rgba(var(--primary),0.2)] max-w-2xl w-full"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                        <MessageSquare className="w-6 h-6 text-primary group-hover:animate-bounce" />
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-5 h-5 text-primary group-hover:animate-bounce" />
                       </div>
                       <div className="flex-1 text-left">
-                        <span className="block text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1">Universal Consciousness Link</span>
-                        <span className="text-sm sm:text-lg font-headline font-bold text-foreground">"Sankhya, how does my birth chart align with today's Benares twilight?"</span>
+                        <span className="text-sm sm:text-base font-headline font-bold text-foreground opacity-90 group-hover:opacity-100">
+                          "Sankhya, what do the numbers say about my next 24 hours?"
+                        </span>
                       </div>
-                      <Zap className="w-5 h-5 text-secondary animate-pulse" />
+                      <Zap className="w-4 h-4 text-secondary animate-pulse" />
                     </motion.button>
                   </div>
 
@@ -205,20 +201,20 @@ export default function Home() {
                   <section className="relative w-full flex flex-col items-center">
                     <CelestialOrb userProfile={userProfile} lifePath={personalData?.lifePath} />
                     
-                    {/* Celestial Events Grid Under the Orb (2x3 Grid) */}
+                    {/* 2x3 Grid of Ongoing/Future Celestial Events */}
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-4 w-full max-w-5xl grid grid-cols-2 md:grid-cols-3 gap-4 px-4 z-20"
+                      className="mt-8 w-full max-w-5xl grid grid-cols-2 md:grid-cols-3 gap-4 px-4 z-20"
                     >
                       {celestialEvents.map((item, i) => (
-                        <Card key={i} className="glass-morphism border-none p-5 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-all cursor-default relative overflow-hidden">
+                        <Card key={i} className="glass-morphism border-none p-5 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-all cursor-default relative overflow-hidden h-32">
                           <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
                             <item.icon className={`w-8 h-8 ${item.color}`} />
                           </div>
                           <item.icon className={`w-5 h-5 mb-1 ${item.color} group-hover:animate-pulse`} />
                           <span className="text-[9px] uppercase font-black tracking-widest text-foreground/60">{item.label}</span>
-                          <span className={`text-lg font-headline font-black text-foreground group-hover:neon-glow`}>{item.value}</span>
+                          <span className={`text-base font-headline font-black text-foreground group-hover:neon-glow`}>{item.value}</span>
                           <span className="text-[10px] font-bold text-primary opacity-70 group-hover:opacity-100">{item.impact}</span>
                         </Card>
                       ))}
@@ -240,7 +236,7 @@ export default function Home() {
                         </div>
                         <h3 className="text-2xl font-headline font-bold text-primary">Transit Weaver</h3>
                         <p className="text-base text-foreground font-bold leading-relaxed">
-                          Numerical signature suggests a <span className="text-primary underline">Personal Year {personalData?.personalYear}</span>. 
+                          Your current cycle aligns with a <span className="text-primary underline">Personal Year {personalData?.personalYear}</span>. 
                           The magical frequency for today is <span className="text-secondary">Vibration {personalData?.universalDay}</span>.
                         </p>
                         <button 
@@ -255,7 +251,6 @@ export default function Home() {
                 </motion.div>
               )}
 
-              {/* Module Loader */}
               <div className="w-full">
                 {activeTab === 'chat' && <motion.div key="chat" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><QueryInterface userProfile={userProfile} /></motion.div>}
                 {activeTab === 'palm' && <motion.div key="palm" initial={{ opacity: 0 }} animate={{ opacity: 1 }}><PalmScanner /></motion.div>}

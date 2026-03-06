@@ -1,8 +1,9 @@
+
 "use client"
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Info, X, Zap, Target, Star } from 'lucide-react';
+import { Sparkles, Zap, Target, Star, History, Forward } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -88,14 +89,10 @@ export function CelestialOrb({ userProfile, lifePath, destiny }: CelestialOrbPro
   };
 
   return (
-    <div className="relative w-full h-[50vh] sm:h-[70vh] flex items-center justify-center perspective-1000">
-      {/* Background Mandala Glow */}
+    <div className="relative w-full h-[50vh] sm:h-[60vh] flex items-center justify-center perspective-1000">
       <div className="absolute w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-primary/10 rounded-full blur-[100px] sm:blur-[150px] pointer-events-none opacity-40 animate-pulse" />
-      
-      {/* Sacred Geometry Overlay */}
       <div className="absolute inset-0 sacred-grid pointer-events-none opacity-20" />
 
-      {/* Main Orb Container */}
       <motion.div 
         className="relative w-full h-full flex items-center justify-center transform-style-3d"
         animate={{ 
@@ -104,10 +101,8 @@ export function CelestialOrb({ userProfile, lifePath, destiny }: CelestialOrbPro
         }}
         transition={{ type: 'spring', stiffness: 30, damping: 15 }}
       >
-        {/* Glowing Central Sphere (Sankhya Core) */}
         <div className={`absolute ${sphereSize} bg-gradient-to-tr from-primary via-white to-secondary rounded-full shadow-[0_0_80px_rgba(255,153,51,0.4)] blur-sm opacity-50 pulse-glow`} />
         
-        {/* Orbiting Numbers (The Matrix) */}
         {NUMBERS.map((num, idx) => {
           const isSpecial = num === lifePath || num === destiny;
           return (
@@ -138,14 +133,12 @@ export function CelestialOrb({ userProfile, lifePath, destiny }: CelestialOrbPro
           );
         })}
 
-        {/* Constellation Lines */}
         <svg className="absolute w-full h-full opacity-20 pointer-events-none overflow-visible">
           <circle cx="50%" cy="50%" r={orbitRadius} fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="5 5" className="text-white" />
           <circle cx="50%" cy="50%" r={orbitRadius * 0.7} fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="10 10" className="text-primary" />
         </svg>
       </motion.div>
 
-      {/* Floating Vedic Particles */}
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -168,7 +161,6 @@ export function CelestialOrb({ userProfile, lifePath, destiny }: CelestialOrbPro
         />
       ))}
 
-      {/* Number Detail Modal */}
       <Dialog open={!!selectedNumber} onOpenChange={() => setSelectedNumber(null)}>
         <DialogContent className="glass-morphism border-primary/20 sm:max-w-md rounded-[3rem]">
           {selectedNumber && (
@@ -178,17 +170,14 @@ export function CelestialOrb({ userProfile, lifePath, destiny }: CelestialOrbPro
                   <div className="text-4xl font-headline font-black">{selectedNumber}</div>
                 </div>
                 <DialogTitle className="font-headline text-3xl font-bold text-center text-primary uppercase tracking-tighter">
-                  Numerical Resonance {selectedNumber}
+                  Vibration {selectedNumber}
                 </DialogTitle>
-                <DialogDescription className="text-center text-foreground font-black uppercase tracking-widest text-[10px] opacity-80">
-                  Matrix Decode Active
-                </DialogDescription>
               </DialogHeader>
 
               <div className="space-y-6 pt-4">
                 <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
                   <h4 className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px]">
-                    <Target className="w-4 h-4" /> Esoteric Essence
+                    <Target className="w-4 h-4" /> Current Essence
                   </h4>
                   <p className="text-sm text-foreground leading-relaxed font-bold italic">
                     {getNumberMeaning(selectedNumber)}
@@ -197,15 +186,24 @@ export function CelestialOrb({ userProfile, lifePath, destiny }: CelestialOrbPro
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-2xl bg-secondary/10 border border-secondary/20 flex flex-col items-center">
-                    <Zap className="w-4 h-4 text-secondary mb-2" />
-                    <h5 className="text-[9px] font-black uppercase text-secondary tracking-widest">Frequency</h5>
-                    <p className="text-xs text-foreground font-black">{selectedNumber * 111} Hz</p>
+                    <History className="w-4 h-4 text-secondary mb-2" />
+                    <h5 className="text-[9px] font-black uppercase text-secondary tracking-widest">Karmic Mark</h5>
+                    <p className="text-xs text-foreground font-black">Active Phase</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-accent/10 border border-accent/20 flex flex-col items-center">
-                    <Sparkles className="w-4 h-4 text-accent mb-2" />
-                    <h5 className="text-[9px] font-black uppercase text-accent tracking-widest">Alignment</h5>
-                    <p className="text-xs text-foreground font-black">High Pulse</p>
+                    <Forward className="w-4 h-4 text-accent mb-2" />
+                    <h5 className="text-[9px] font-black uppercase text-accent tracking-widest">Future Pulse</h5>
+                    <p className="text-xs text-foreground font-black">Incoming Resonance</p>
                   </div>
+                </div>
+
+                <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10">
+                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest mb-2 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3" /> Future Shift
+                  </h4>
+                  <p className="text-[11px] text-foreground font-bold leading-relaxed">
+                    This number will cycle back in <span className="text-primary">{selectedNumber * 3} days</span>. Prepare for a surge in <span className="italic">{selectedNumber % 2 === 0 ? 'collaborative' : 'independent'}</span> energy.
+                  </p>
                 </div>
               </div>
             </>
