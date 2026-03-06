@@ -137,6 +137,48 @@ export default function Home() {
     return { lifePath, personalYear, personalMonth, universalDay };
   }, [userProfile]);
 
+  const dynamicWeeklyForecast = useMemo(() => {
+    if (!userProfile?.birthDate) return [];
+    
+    const [bYear, bMonth, bDay] = userProfile.birthDate.split('-').map(Number);
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const personalYear = reduceToSingleDigit(bMonth + bDay + currentYear);
+
+    const themes: Record<number, string> = {
+      1: 'Initiation',
+      2: 'Balance',
+      3: 'Creativity',
+      4: 'Focus',
+      5: 'Change',
+      6: 'Nurture',
+      7: 'Insight',
+      8: 'Power',
+      9: 'Release',
+      11: 'Vision',
+      22: 'Mastery',
+      33: 'Service'
+    };
+
+    const forecast = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(now.getDate() + i);
+      
+      const m = date.getMonth() + 1;
+      const d = date.getDate();
+      
+      const vibration = reduceToSingleDigit(personalYear + m + d);
+      
+      forecast.push({
+        day: date.toLocaleDateString(language, { weekday: 'short' }),
+        vibration,
+        theme: themes[vibration] || 'Resonance'
+      });
+    }
+    return forecast;
+  }, [userProfile, language]);
+
   const celestialEvents = [
     { label: 'Sun Path', value: 'Aries Transit', icon: Sun, impact: 'High Vitality', color: 'text-primary', details: 'Bold action and primal initiation.' },
     { label: 'Moon Phase', value: 'Waxing Crescent', icon: Moon, impact: 'Internal Growth', color: 'text-secondary', details: 'Nurture intentions and creative seeds.' },
@@ -144,16 +186,6 @@ export default function Home() {
     { label: 'Mars Pulse', value: 'Leo Energy', icon: Lightning, impact: 'Creative Force', color: 'text-primary', details: 'Courageous self-expression.' },
     { label: 'Jupiter Reach', icon: Star, value: 'Pisces Horizon', impact: 'Spiritual expansion', color: 'text-secondary', details: 'Intuitive breakthroughs and abundance.' },
     { label: 'Saturn Hold', icon: Shield, value: 'Aquarius Zone', impact: 'Karmic Structure', color: 'text-accent', details: 'Innovation through discipline.' },
-  ];
-
-  const weeklyForecast = [
-    { day: 'Mon', vibration: 3, theme: 'Expression' },
-    { day: 'Tue', vibration: 7, theme: 'Reflection' },
-    { day: 'Wed', vibration: 1, theme: 'Ambition' },
-    { day: 'Thu', vibration: 5, theme: 'Adventure' },
-    { day: 'Fri', vibration: 9, theme: 'Completion' },
-    { day: 'Sat', vibration: 2, theme: 'Harmony' },
-    { day: 'Sun', vibration: 8, theme: 'Power' },
   ];
 
   const isLanding = !user || !userProfile;
@@ -229,7 +261,7 @@ export default function Home() {
                         <span className="text-[9px] font-black uppercase tracking-widest text-foreground/40">Weekly Sync Matrix</span>
                       </div>
                       <div className="flex justify-between items-end h-40 gap-2">
-                        {weeklyForecast.map((day, i) => (
+                        {dynamicWeeklyForecast.map((day, i) => (
                           <div key={i} className="flex-1 flex flex-col items-center gap-3 group">
                             <div className="w-full bg-white/5 rounded-t-xl relative overflow-hidden flex items-end justify-center" style={{ height: `${day.vibration * 10}%` }}>
                               <motion.div 
