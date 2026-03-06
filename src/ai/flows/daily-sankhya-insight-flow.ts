@@ -2,14 +2,13 @@
 /**
  * @fileOverview Provides a comprehensive daily insight based on user birth details, current location,
  * and real-time planetary positions, integrating numerology, astrology, and vastu principles.
- *
- * - dailySankhyaInsight - A function that generates the daily insight.
- * - DailySankhyaInsightInput - The input type for the dailySankhyaInsight function.
- * - DailySankhyaInsightOutput - The return type for the dailySankhyaInsight function.
+ * Includes a robust logic-driven fallback system.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { reduceToSingleDigit, NUMEROLOGY_THEORIES } from '@/lib/numerology-logic';
+import { getSunSign, ASTRO_REMEDIES, getDailyPanchang } from '@/lib/astrology-logic';
 
 const DailySankhyaInsightInputSchema = z.object({
   userName: z.string().describe("The user's name."),
@@ -25,127 +24,77 @@ const DailySankhyaInsightInputSchema = z.object({
 export type DailySankhyaInsightInput = z.infer<typeof DailySankhyaInsightInputSchema>;
 
 const DailySankhyaInsightOutputSchema = z.object({
-  dailyInsight: z
-    .string()
-    .describe(
-      'A comprehensive daily insight based on numerology, astrology, and vastu. Keep it concise, poetic, and inspiring.'
-    ),
-  summary: z.string().describe('A one-sentence executive summary of the day.'),
-  energeticAlignment: z.string().describe('A summary of the user\'s current energetic alignment.'),
-  dailyTheme: z.string().describe('The dominant themes for the user\'s day.'),
-  highlights: z.array(z.string()).describe('Top 3 strategic highlights for the day.'),
-  opportunities: z.array(z.string()).describe('Specific opportunities the user should look out for.'),
-  thingsToAvoid: z.array(z.string()).describe('Specific actions or mindsets to avoid today.'),
-  suggestions: z.array(z.string()).describe('Actionable suggestions for professional or personal growth.'),
-  microRituals: z
-    .array(z.string())
-    .describe('Personalized micro-rituals for the day, e.g., specific colors to wear, frequency music, affirmations.'),
+  dailyInsight: z.string(),
+  summary: z.string(),
+  energeticAlignment: z.string(),
+  dailyTheme: z.string(),
+  highlights: z.array(z.string()),
+  opportunities: z.array(z.string()),
+  thingsToAvoid: z.array(z.string()),
+  suggestions: z.array(z.string()),
+  microRituals: z.array(z.string()),
 });
 export type DailySankhyaInsightOutput = z.infer<typeof DailySankhyaInsightOutputSchema>;
 
-// Mock function for fetching planetary positions. In a real application, this would call an external API.
-async function getMockPlanetaryPositions(
-  latitude: number,
-  longitude: number,
-  dateTime: Date,
-  timezoneOffset: number
-): Promise<string> {
-  const formattedDateTime = dateTime.toLocaleString('en-US', {
-    timeZone: 'UTC',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-  });
-
-  const mockPositions = [
-    'Sun in Aries (ambition, new beginnings)',
-    'Moon in Cancer (emotional sensitivity, nurturing)',
-    'Mars in Leo (creativity, leadership)',
-    'Mercury in Taurus (practical communication, stability)',
-    'Jupiter in Pisces (compassion, spiritual growth)',
-    'Venus in Gemini (social connections, intellectual charm)',
-    'Saturn in Aquarius (innovation, community focus)',
-  ];
-
-  const mockPanchang = `
-    Today's Tithi: Shukla Paksha Tritiya (growth, expansion)
-    Nakshatra: Ashwini (healing, initiation)
-    Yoga: Priti (joy, contentment)
-    Karana: Kaulava (social interaction)
-    This day supports dynamic action and heartfelt connections.
-  `;
-
-  const mockVastuHint = `
-    Based on your current location (Lat: ${latitude}, Lon: ${longitude}), consider aligning your workspace towards the North-East for enhanced clarity and focus today.
-  `;
-
-  return `Planetary positions for ${formattedDateTime} (UTC, adjusted for local timezone offset ${timezoneOffset} minutes):
-${mockPositions.join('\n')}
-${mockPanchang}
-${mockVastuHint}
-`;
-}
-
 const dailySankhyaInsightPrompt = ai.definePrompt({
   name: 'dailySankhyaInsightPrompt',
-  input: { schema: DailySankhyaInsightInputSchema },
+  input: { schema: DailySankhyaInsightInputSchema.extend({ planetaryAndAstrologicalData: z.string() }) },
   output: { schema: DailySankhyaInsightOutputSchema },
-  prompt: `You are Sankhya, a highly intelligent reasoning engine specializing in Pythagorean and Chaldean Numerology, Vedic Astrology (Jyotish), and Vastu Shastra. Your purpose is to provide profound daily insights.
-
-IMPORTANT: Provide the response in the language specified: {{{language}}}. If the language is 'bn', use Bengali. If 'hi', use Hindi. Default to English if not specified or understood.
-
-Integrate all provided information to synthesize a comprehensive daily insight, summary, highlights, opportunities, risks (things to avoid), and specific micro-rituals.
-
-User Profile:
-- Name: {{{userName}}}
-- Birth Date: {{{birthDate}}}
-- Birth Time: {{{birthTime}}}
-- Birth Place: {{{birthPlace}}}
-
-Current Context:
-- Current Date and Time: {{{currentDateTime}}} (Local Time)
-- Current Location: Latitude {{{currentLatitude}}}, Longitude {{{currentLongitude}}}
-
-Real-time Planetary and Astrological Data:
-{{{planetaryAndAstrologicalData}}}
-
-Task: Generate a concise, poetic, and inspiring daily insight. 
-Provide a one-sentence summary.
-List 3 strategic highlights.
-Identify 2-3 specific opportunities.
-Identify 2-3 things to avoid.
-Provide 2-3 actionable suggestions/remedies.
-Ensure the output is well-structured and aligns with the principles of Numerology, Jyotish, and Vastu.`,
+  prompt: `You are Sankhya, a high-intelligence reasoning engine. 
+  Generate a profound daily insight for {{{userName}}}.
+  
+  Language: {{{language}}}
+  
+  Context:
+  Profile: {{{userName}}}, born {{{birthDate}}} at {{{birthPlace}}}.
+  Astrological Context: {{{planetaryAndAstrologicalData}}}
+  
+  Integrate Numerology, Jyotish, and Vastu. Provide strategic, poetic, and actionable data.`,
 });
 
-const dailySankhyaInsightFlow = ai.defineFlow(
-  {
-    name: 'dailySankhyaInsightFlow',
-    inputSchema: DailySankhyaInsightInputSchema,
-    outputSchema: DailySankhyaInsightOutputSchema,
-  },
-  async (input) => {
-    const currentDateTimeObj = new Date(input.currentDateTime);
+export async function dailySankhyaInsight(input: DailySankhyaInsightInput): Promise<DailySankhyaInsightOutput> {
+  // Step 1: Calculate Logic-Based Grounding
+  const [bYear, bMonth, bDay] = input.birthDate.split('-').map(Number);
+  const lifePath = reduceToSingleDigit(bYear + bMonth + bDay);
+  const sunSign = getSunSign(input.birthDate);
+  const panchang = getDailyPanchang(new Date(input.currentDateTime));
+  const numTheory = NUMEROLOGY_THEORIES[lifePath];
 
-    const planetaryAndAstrologicalData = await getMockPlanetaryPositions(
-      input.currentLatitude,
-      input.currentLongitude,
-      currentDateTimeObj,
-      input.currentTimezoneOffset
-    );
-
+  // Step 2: Attempt AI Generation
+  try {
+    const planetaryData = `Sun in ${sunSign}. Tithi: ${panchang.tithi}. Nakshatra: ${panchang.nakshatra}. Numerology: Life Path ${lifePath} (${numTheory.title}).`;
+    
     const { output } = await dailySankhyaInsightPrompt({
       ...input,
-      planetaryAndAstrologicalData,
+      planetaryAndAstrologicalData: planetaryData,
     });
-    return output!;
+    
+    if (output) return output;
+    throw new Error('AI output empty');
+  } catch (error) {
+    // Step 3: Fallback to Mathematical Logic (No Fail Guarantee)
+    console.warn("AI Quota Exhausted or Error. Using internal Sankhya logic.");
+    
+    return {
+      dailyInsight: `The matrix indicates a phase of ${numTheory.essence} today. With the Sun in ${sunSign}, your path is illuminated by ${panchang.tithi} energy.`,
+      summary: `A day for ${numTheory.title.toLowerCase()} energy and ${sunSign} focus.`,
+      energeticAlignment: `Aligned with Life Path ${lifePath} and ${panchang.nakshatra} Nakshatra.`,
+      dailyTheme: numTheory.title,
+      highlights: [
+        `Harness the power of ${numTheory.title}`,
+        `Leverage ${sunSign} strengths`,
+        `Observe ${panchang.tithi} discipline`
+      ],
+      opportunities: [
+        `Strategic planning in the North-East sector`,
+        `Engagement with ${sunSign}-aligned tasks`
+      ],
+      thingsToAvoid: [
+        `Ignoring your ${lifePath} vibration`,
+        `Impulsive ${sunSign} behavior`
+      ],
+      suggestions: ASTRO_REMEDIES[sunSign],
+      microRituals: numTheory.rituals
+    };
   }
-);
-
-export async function dailySankhyaInsight(input: DailySankhyaInsightInput): Promise<DailySankhyaInsightOutput> {
-  return dailySankhyaInsightFlow(input);
 }
