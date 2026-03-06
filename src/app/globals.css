@@ -4,19 +4,18 @@
 
 @layer base {
   :root {
-    /* Default Theme: Vedic Cyber-Loom (Dark) */
     --background: 240 18% 4%;
     --foreground: 0 0% 100%;
     --card: 240 18% 7%;
     --card-foreground: 0 0% 100%;
     --popover: 240 18% 4%;
     --popover-foreground: 0 0% 100%;
-    --primary: 27 100% 60%; /* Saffron */
+    --primary: 27 100% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 142 70% 45%; /* Ashoka Green */
+    --secondary: 142 70% 45%;
     --secondary-foreground: 0 0% 100%;
     --muted: 240 18% 12%;
-    --muted-foreground: 0 0% 85%; /* High Contrast */
+    --muted-foreground: 0 0% 85%;
     --accent: 190 100% 75%;
     --accent-foreground: 240 18% 10%;
     --destructive: 0 84.2% 60.2%;
@@ -24,152 +23,43 @@
     --border: 240 18% 15%;
     --input: 240 18% 15%;
     --ring: 27 100% 60%;
-    --radius: 1.5rem;
-  }
-
-  [data-theme='alchemist'] {
-    /* Solar Alchemist (Light) */
-    --background: 40 30% 96%;
-    --foreground: 40 50% 10%;
-    --card: 40 30% 92%;
-    --card-foreground: 40 50% 10%;
-    --primary: 45 100% 45%; /* Gold */
-    --secondary: 20 60% 40%; /* Terracotta */
-    --accent: 35 100% 50%;
-    --muted-foreground: 40 50% 25%;
-    --border: 40 30% 85%;
-  }
-
-  [data-theme='monsoon'] {
-    /* Astral Monsoon (Dark) */
-    --background: 220 40% 6%;
-    --foreground: 180 100% 95%;
-    --card: 220 40% 10%;
-    --primary: 180 100% 50%; /* Cyan */
-    --secondary: 260 60% 60%; /* Indigo */
-    --accent: 200 100% 70%;
-    --muted-foreground: 180 50% 80%;
-    --border: 220 40% 15%;
-  }
-
-  [data-theme='lotus'] {
-    /* Lotus Dawn (Light) */
-    --background: 340 30% 98%;
-    --foreground: 340 60% 20%;
-    --card: 340 30% 94%;
-    --primary: 340 80% 60%; /* Lotus Pink */
-    --secondary: 45 100% 50%; /* Golden Sun */
-    --accent: 320 100% 70%;
-    --muted-foreground: 340 40% 35%;
-    --border: 340 30% 90%;
-  }
-
-  [data-theme='twilight'] {
-    /* Benares Twilight (Dark) */
-    --background: 280 40% 4%;
-    --foreground: 20 100% 90%;
-    --card: 280 40% 8%;
-    --primary: 20 100% 60%; /* Copper Orange */
-    --secondary: 280 60% 60%; /* Spiritual Purple */
-    --accent: 40 100% 70%;
-    --muted-foreground: 20 50% 80%;
-    --border: 280 40% 15%;
-  }
-
-  [data-theme='indus'] {
-    /* Indus Grid (Dark) */
-    --background: 210 20% 4%;
-    --foreground: 190 100% 95%;
-    --card: 210 20% 8%;
-    --primary: 190 100% 50%; /* Digital Cyan */
-    --secondary: 210 20% 60%; /* Slate Silver */
-    --accent: 170 100% 60%;
-    --muted-foreground: 190 50% 80%;
-    --border: 210 20% 15%;
-  }
-
-  [data-theme='darbar'] {
-    /* Royal Darbar (Dark) */
-    --background: 0 40% 4%;
-    --foreground: 45 100% 90%;
-    --card: 0 40% 8%;
-    --primary: 0 80% 50%; /* Deep Maroon */
-    --secondary: 45 100% 50%; /* Royal Gold */
-    --accent: 220 80% 50%; /* Navy Blue */
-    --muted-foreground: 45 50% 80%;
-    --border: 0 40% 15%;
+    --radius: 0rem; /* Strictly square for the requested sleek look */
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border rounded-none !important; /* Force square edges app-wide */
   }
   body {
     @apply bg-background text-foreground font-body antialiased selection:bg-primary/30 overflow-x-hidden;
     background: 
-      radial-gradient(circle at 10% 10%, hsla(var(--primary), 0.15), transparent 40%),
-      radial-gradient(circle at 90% 90%, hsla(var(--secondary), 0.1), transparent 40%),
-      radial-gradient(circle at 50% 50%, hsla(var(--foreground), 0.05), transparent 60%),
+      radial-gradient(circle at 10% 10%, hsla(var(--primary), 0.1), transparent 40%),
+      radial-gradient(circle at 90% 90%, hsla(var(--secondary), 0.05), transparent 40%),
       hsl(var(--background));
     background-attachment: fixed;
     min-height: 100vh;
-    transition: background 0.5s ease, color 0.5s ease;
   }
 }
 
 .glass-morphism {
-  @apply bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl transition-all duration-300;
+  @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl transition-all duration-200;
 }
 
 .glass-morphism:hover {
   @apply bg-white/10 border-white/20;
-  box-shadow: 0 0 30px hsla(var(--primary), 0.15);
 }
 
 .neon-glow {
-  text-shadow: 0 0 10px hsl(var(--primary) / 0.8), 0 0 20px hsl(var(--primary) / 0.4);
-}
-
-.pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.6; filter: blur(8px); transform: scale(1); }
-  50% { opacity: 1; filter: blur(14px); transform: scale(1.05); }
-}
-
-@keyframes grid-flow {
-  0% { background-position: 0 0; }
-  100% { background-position: 40px 40px; }
+  text-shadow: 0 0 8px hsl(var(--primary) / 0.6);
 }
 
 .sacred-grid {
   background-image: 
-    linear-gradient(to right, hsla(var(--primary), 0.1) 1px, transparent 1px),
-    linear-gradient(to bottom, hsla(var(--primary), 0.1) 1px, transparent 1px);
-  background-size: 40px 40px;
-  animation: grid-flow 20s linear infinite;
+    linear-gradient(to right, hsla(var(--white), 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, hsla(var(--white), 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
 }
-
-.bg-cosmic {
-  background-size: 200% 200%;
-  animation: cosmic-drift 30s ease-in-out infinite;
-}
-
-@keyframes cosmic-drift {
-  0% { background-position: 0% 0%; }
-  50% { background-position: 100% 100%; }
-  100% { background-position: 0% 0%; }
-}
-
-.random-stack-1 { transform: rotate(-1.5deg) translateY(4px); }
-.random-stack-2 { transform: rotate(2deg) translateX(4px); }
-.random-stack-3 { transform: rotate(-0.8deg) translateY(-4px); }
-
-.perspective-1000 { perspective: 1000px; }
-.transform-style-3d { transform-style: preserve-3d; }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -179,21 +69,3 @@
   to { transform: rotate(360deg); }
 }
 .animate-spin-very-slow { animation: spin-slow 60s linear infinite; }
-
-@keyframes flag-wave {
-  0%, 100% { transform: rotate(-2deg) translateY(0); }
-  50% { transform: rotate(2deg) translateY(-2px); }
-}
-.animate-flag-wave {
-  animation: flag-wave 2s ease-in-out infinite;
-}
-
-@keyframes heart-chroma {
-  0% { color: #ff9933; transform: scale(1); filter: drop-shadow(0 0 5px #ff9933); }
-  33% { color: #ffffff; transform: scale(1.2); filter: drop-shadow(0 0 8px #ffffff); }
-  66% { color: #138808; transform: scale(1); filter: drop-shadow(0 0 5px #138808); }
-  100% { color: #ff9933; transform: scale(1); filter: drop-shadow(0 0 5px #ff9933); }
-}
-.animate-heart-chroma {
-  animation: heart-chroma 2s linear infinite;
-}
