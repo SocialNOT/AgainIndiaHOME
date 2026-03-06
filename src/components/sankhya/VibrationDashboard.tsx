@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo, useState } from 'react';
@@ -37,7 +36,6 @@ export function VibrationDashboard({ userProfile, language }: VibrationDashboard
     const [year, month, day] = userProfile.birthDate.split('-').map(Number);
     const lifePath = reduceToSingleDigit(year + month + day);
     
-    // Simple Chaldean mapping for destiny (example)
     const letterValues: Record<string, number> = { A: 1, I: 1, J: 1, Q: 1, Y: 1, B: 2, K: 2, R: 2, C: 3, G: 3, L: 3, S: 3, D: 4, M: 4, T: 4, E: 5, H: 5, N: 5, X: 5, U: 6, V: 6, W: 6, O: 7, Z: 7, F: 8, P: 8 };
     const nameSum = userProfile.name?.toUpperCase().split('').reduce((acc: number, char: string) => acc + (letterValues[char] || 0), 0);
     const destiny = reduceToSingleDigit(nameSum);
@@ -55,8 +53,8 @@ export function VibrationDashboard({ userProfile, language }: VibrationDashboard
         color: 'text-primary',
         glow: 'shadow-[0_0_30px_rgba(var(--primary),0.3)]',
         summary: 'Your core frequency and purpose.',
-        details: `Your Life Path ${lifePath} represents the road you are destined to travel. It is the primary frequency you broadcast to the universe.`,
-        future: `A major shift in your ${lifePath} cycle is expected in the next personal cycle.`
+        details: `Your Life Path ${lifePath} represents the road you are destined to travel. It is the primary frequency you broadcast to the universe. It dictates the fundamental theme of your incarnation and the lessons you are here to master.`,
+        future: `A major shift in your ${lifePath} cycle is expected in the next personal cycle. Prepare for heightened intuition.`
       },
       {
         id: 'destiny',
@@ -66,8 +64,8 @@ export function VibrationDashboard({ userProfile, language }: VibrationDashboard
         color: 'text-secondary',
         glow: 'shadow-[0_0_30px_rgba(var(--secondary),0.3)]',
         summary: 'Your manifestation and talent.',
-        details: `The Destiny number ${destiny} reveals your natural abilities and how you express your Life Path. It is the 'how' behind your 'why'.`,
-        future: `Expect enhanced ${destiny % 2 === 0 ? 'collaborative' : 'independent'} opportunities soon.`
+        details: `The Destiny number ${destiny} reveals your natural abilities and how you express your Life Path. It is the manifestation power you use to shape your reality and achieve your cosmic goals.`,
+        future: `Expect enhanced ${destiny % 2 === 0 ? 'collaborative' : 'independent'} opportunities in the coming full moon.`
       },
       {
         id: 'personalyear',
@@ -77,8 +75,8 @@ export function VibrationDashboard({ userProfile, language }: VibrationDashboard
         color: 'text-accent',
         glow: 'shadow-[0_0_30px_rgba(var(--accent),0.3)]',
         summary: 'The theme of your current phase.',
-        details: `Personal Year ${personalYear} dictates the energetic climate of your life right now. This is a time for ${personalYear === 1 ? 'new beginnings' : personalYear === 9 ? 'completion' : 'growth'}.`,
-        future: `The transition to Personal Year ${reduceToSingleDigit(personalYear + 1)} will begin its influence in 3 months.`
+        details: `Personal Year ${personalYear} dictates the energetic climate of your life right now. This is a crucial cycle for ${personalYear === 1 ? 'new beginnings' : personalYear === 9 ? 'completion' : 'rapid growth'}.`,
+        future: `The transition to Personal Year ${reduceToSingleDigit(personalYear + 1)} will begin its influence in the next quarter.`
       }
     ];
   }, [userProfile]);
@@ -159,10 +157,10 @@ export function VibrationDashboard({ userProfile, language }: VibrationDashboard
       </Card>
 
       <Dialog open={!!selectedVibration} onOpenChange={() => setSelectedVibration(null)}>
-        <DialogContent className="glass-morphism border-primary/20 sm:max-w-lg rounded-[3rem] max-h-[90vh] overflow-y-auto no-scrollbar">
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-lg rounded-[3rem] max-h-[90vh] overflow-y-auto no-scrollbar p-0 overflow-hidden">
           {selectedVibration && (
-            <>
-              <DialogHeader className="space-y-4">
+            <div className="flex flex-col h-full">
+              <DialogHeader className="p-8 pb-4 space-y-4 shrink-0">
                 <div className={`w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center ${selectedVibration.color} mx-auto border border-primary/20 shadow-2xl`}>
                   <selectedVibration.icon className="w-10 h-10" />
                 </div>
@@ -174,7 +172,7 @@ export function VibrationDashboard({ userProfile, language }: VibrationDashboard
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-6 pt-4">
+              <div className="flex-1 overflow-y-auto px-8 pb-12 space-y-6">
                 <section className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
                   <h4 className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px]">
                     <Info className="w-4 h-4" /> Core Archetype
@@ -197,16 +195,18 @@ export function VibrationDashboard({ userProfile, language }: VibrationDashboard
                   </div>
                 </div>
 
-                <section className="bg-primary/5 p-4 rounded-2xl border border-primary/10">
-                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest mb-2 flex items-center gap-2">
+                <section className="bg-primary/5 p-6 rounded-3xl border border-primary/10">
+                  <h4 className="text-[9px] font-black uppercase text-primary tracking-widest mb-3 flex items-center gap-2">
                     <Sparkles className="w-3 h-3" /> Future Shift
                   </h4>
                   <p className="text-[11px] text-foreground font-bold leading-relaxed">
                     {selectedVibration.future}
                   </p>
                 </section>
+                
+                <div className="h-4" />
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>

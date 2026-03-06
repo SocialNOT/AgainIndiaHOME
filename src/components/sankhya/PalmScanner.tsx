@@ -220,10 +220,10 @@ export function PalmScanner() {
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="glass-morphism border-primary/20 sm:max-w-2xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-[3rem]">
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-2xl max-h-[90vh] overflow-hidden rounded-[3rem] p-0">
           {result && (
-            <>
-              <DialogHeader className="space-y-4">
+            <div className="flex flex-col h-full">
+              <DialogHeader className="p-8 pb-4 space-y-4 shrink-0">
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto border border-primary/20 shadow-2xl">
                   <Scan className="w-10 h-10" />
                 </div>
@@ -235,7 +235,7 @@ export function PalmScanner() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-8 pt-6">
+              <div className="flex-1 overflow-y-auto px-8 pb-12 space-y-8 no-scrollbar">
                 <section className="space-y-4">
                   <h4 className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-sm">
                     <Target className="w-4 h-4" /> Full Interpretation
@@ -276,13 +276,15 @@ export function PalmScanner() {
                       </li>
                       <li className="flex gap-3 items-center">
                         <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
-                        <span className="text-xs text-foreground font-bold">Monitor life-line energy flux during full moon transits.</span>
+                        <span className="text-xs text-foreground font-bold">Monitor life-line energy flux during planetary shifts.</span>
                       </li>
                     </ul>
                   </div>
                 </section>
+                
+                <div className="h-4" />
               </div>
-            </>
+            </div>
           )}
         </DialogContent>
       </Dialog>

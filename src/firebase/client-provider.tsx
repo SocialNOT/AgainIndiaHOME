@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo, useState } from 'react';
@@ -11,17 +10,15 @@ import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 /**
- * FirebaseClientProvider initializes the Firebase SDK on the client side
- * and provides the app, firestore, and auth instances to its children
- * via a React Context.
+ * FirebaseClientProvider initializes the Firebase SDK on the client side.
+ * It ensures the app doesn't crash if keys are missing but allows for 
+ * production initialization once they are provided.
  */
 export const FirebaseClientProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
 
   const instances = useMemo(() => {
     try {
-      // Check for required configuration keys. 
-      // If they are missing, "mock-api-key", or stringified "undefined", we skip initialization.
       if (!firebaseConfig.apiKey || 
           firebaseConfig.apiKey === "mock-api-key" || 
           firebaseConfig.apiKey === "undefined" ||
@@ -41,9 +38,6 @@ export const FirebaseClientProvider: React.FC<{ children: React.ReactNode }> = (
     }
   }, []);
 
-  // If Firebase could not be initialized (e.g., missing API key), 
-  // we show a descriptive alert and do NOT render the children.
-  // This prevents crashes in components that rely on the Firebase context.
   if (!instances) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
@@ -52,8 +46,7 @@ export const FirebaseClientProvider: React.FC<{ children: React.ReactNode }> = (
             Cosmic Link Not Established
           </AlertTitle>
           <AlertDescription className="text-foreground text-xs font-bold leading-relaxed opacity-80 uppercase tracking-widest">
-            Sankhya AI requires a valid Firebase configuration to map your earthly data into the intelligence matrix. 
-            Please provide your API keys in the project settings.
+            Sankhya AI requires a valid Firebase configuration. Please ensure your environment variables are correctly mapped.
             {error && (
               <p className="mt-4 p-3 bg-red-500/10 rounded-xl border border-red-500/20 text-[10px] italic opacity-60">
                 Diagnostic: {error}

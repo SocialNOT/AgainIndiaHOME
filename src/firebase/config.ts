@@ -1,13 +1,12 @@
-
 /**
- * Firebase configuration using environment variables.
- * These values must be provided in the Firebase console project settings.
+ * Firebase configuration for the Again India | Sankhya AI production environment.
  */
 export const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyAF8KOh-oBre6zHSO6lu-A6AlvUe6kLF5k",
+  authDomain: "studio-4941900787-9d9c2.firebaseapp.com",
+  projectId: "studio-4941900787-9d9c2",
+  storageBucket: "studio-4941900787-9d9c2.firebasestorage.app",
+  messagingSenderId: "271962847668",
+  appId: "1:271962847668:web:81fd2fdfee653e16305ae1",
+  measurementId: "G-ZKNQGDQX9J"
 };
