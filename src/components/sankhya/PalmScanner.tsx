@@ -1,9 +1,8 @@
-
 "use client"
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Scan, RefreshCcw, Info, Loader2, Sparkles, BookOpen, Target, Zap } from 'lucide-react';
+import { Camera, Scan, RefreshCcw, Info, Loader2, Sparkles, BookOpen, Target, Zap, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { interpretPalmLines } from '@/ai/flows/interpret-palm-lines-flow';
@@ -24,6 +23,7 @@ export function PalmScanner() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const getCameraPermission = async () => {
@@ -59,6 +59,17 @@ export function PalmScanner() {
         const dataUrl = canvasRef.current.toDataURL('image/jpeg');
         setPhoto(dataUrl);
       }
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -98,21 +109,37 @@ export function PalmScanner() {
                 <div className="absolute inset-0 sacred-grid opacity-20" />
               </div>
               
-              <div className="absolute bottom-6 w-full flex justify-center px-6">
-                <Button 
-                  onClick={capturePhoto} 
-                  className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_40px_rgba(var(--primary),0.5)] transition-all"
-                  disabled={hasCameraPermission === false}
-                >
-                  <Camera className="w-8 h-8 text-background" />
-                </Button>
+              <div className="absolute bottom-6 w-full flex flex-col items-center gap-4 px-6">
+                <div className="flex gap-4">
+                  <Button 
+                    onClick={capturePhoto} 
+                    className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 shadow-[0_0_40px_rgba(var(--primary),0.5)] transition-all"
+                    disabled={hasCameraPermission === false}
+                  >
+                    <Camera className="w-8 h-8 text-background" />
+                  </Button>
+                  <Button 
+                    variant="secondary"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-16 h-16 rounded-full glass-morphism border-white/10 hover:bg-white/10 transition-all text-primary"
+                  >
+                    <Upload className="w-8 h-8" />
+                  </Button>
+                </div>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={handleFileUpload} 
+                />
               </div>
 
               {hasCameraPermission === false && (
                 <div className="absolute inset-0 bg-background/80 flex items-center p-8 text-center">
                   <Alert variant="destructive" className="border-primary/50 bg-primary/10">
                     <AlertTitle className="text-primary font-bold">Camera Access Denied</AlertTitle>
-                    <AlertDescription className="text-foreground text-xs font-bold">Enable camera access to synchronize your palm with Sankhya.</AlertDescription>
+                    <AlertDescription className="text-foreground text-xs font-bold">Use the upload button or enable camera access to synchronize your palm with Sankhya.</AlertDescription>
                   </Alert>
                 </div>
               )}
@@ -184,7 +211,7 @@ export function PalmScanner() {
                 </div>
                 <h3 className="text-xl font-headline font-bold text-foreground uppercase tracking-widest">Waiting for Scan</h3>
                 <p className="text-xs text-foreground font-bold max-w-xs mx-auto leading-relaxed opacity-70">
-                  Position your dominant palm within the guide. Sankhya will decode the geometric frequencies hidden in your skin.
+                  Capture or upload a photo of your dominant palm. Sankhya will decode the geometric frequencies hidden in your skin.
                 </p>
               </div>
             </div>

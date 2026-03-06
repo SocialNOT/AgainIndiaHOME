@@ -1,10 +1,12 @@
-
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Wind, Droplets, Flame, Mountain, Info, Target, Sparkles, Zap } from 'lucide-react';
+import { Compass, Wind, Droplets, Flame, Mountain, Info, Target, Sparkles, Zap, Upload, Loader2, BookOpen } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { analyzeVastu, AnalyzeVastuOutput } from '@/ai/flows/analyze-vastu-flow';
 import {
   Dialog,
   DialogContent,
@@ -27,6 +29,10 @@ const directions = [
 export function VastuCompass() {
   const [rotation, setRotation] = useState(0);
   const [selectedDir, setSelectedDir] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [vastuResult, setVastuResult] = useState<AnalyzeVastuOutput | null>(null);
+  const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleOrientation = (e: DeviceOrientationEvent) => {
@@ -41,6 +47,30 @@ export function VastuCompass() {
     return () => window.removeEventListener('deviceorientation', handleOrientation);
   }, []);
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const dataUri = reader.result as string;
+        setIsAnalyzing(true);
+        try {
+          const result = await analyzeVastu({ 
+            photoDataUri: dataUri,
+            roomType: 'Space'
+          });
+          setVastuResult(result);
+          setIsAnalysisModalOpen(true);
+        } catch (error) {
+          console.error("Vastu analysis error:", error);
+        } finally {
+          setIsAnalyzing(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-12 pb-20">
       <div className="text-center space-y-2">
@@ -49,9 +79,9 @@ export function VastuCompass() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center px-4">
-        <div className="relative flex items-center justify-center py-10 random-stack-1">
+        <div className="relative flex flex-col items-center justify-center py-10 random-stack-1">
           <motion.div 
-            className="w-72 h-72 sm:w-96 sm:h-96 rounded-full glass-morphism border-primary/20 flex items-center justify-center relative shadow-[0_0_100px_rgba(var(--primary),0.1)]"
+            className="w-72 h-72 sm:w-96 sm:h-96 rounded-full glass-morphism border-primary/20 flex items-center justify-center relative shadow-[0_0_100px_rgba(var(--primary),0.1)] mb-8"
             style={{ rotate: -rotation }}
           >
             {directions.map((dir, i) => (
@@ -70,6 +100,22 @@ export function VastuCompass() {
             </div>
             <div className="absolute inset-0 sacred-grid opacity-10 rounded-full overflow-hidden" />
           </motion.div>
+
+          <Button 
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isAnalyzing}
+            className="w-full max-w-sm h-14 rounded-2xl bg-primary hover:bg-primary/90 text-background font-black uppercase tracking-[0.2em] shadow-[0_0_40px_rgba(var(--primary),0.3)] transition-all"
+          >
+            {isAnalyzing ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-5 h-5 mr-3" />}
+            {isAnalyzing ? 'Analyzing Spatial Grid...' : 'Upload Floor Plan / Room'}
+          </Button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept="image/*" 
+            onChange={handleFileUpload} 
+          />
         </div>
 
         <div className="space-y-6 random-stack-2">
@@ -99,12 +145,13 @@ export function VastuCompass() {
           <div className="p-6 rounded-3xl bg-white/5 border border-white/10 flex gap-4 hover:bg-white/10 transition-all group">
             <Info className="w-6 h-6 text-primary shrink-0 group-hover:rotate-12 transition-transform" />
             <p className="text-[10px] uppercase tracking-[0.2em] text-foreground font-black leading-relaxed">
-              Vastu Shastra is the ancient science of spatial arrangement. Tap any sector to reveal optimization secrets.
+              Vastu Shastra is the ancient science of spatial arrangement. Upload a photo or tap any sector to reveal optimization secrets.
             </p>
           </div>
         </div>
       </div>
 
+      {/* Basic Direction Modal */}
       <Dialog open={!!selectedDir} onOpenChange={() => setSelectedDir(null)}>
         <DialogContent className="glass-morphism border-primary/20 sm:max-w-md rounded-[3rem] max-h-[90vh] overflow-y-auto no-scrollbar">
           {selectedDir && (
@@ -146,6 +193,78 @@ export function VastuCompass() {
                       <p className="text-xs text-foreground font-bold">Avoid clutter to let the {selectedDir.energy} frequency flow.</p>
                     </div>
                   </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Spatial Analysis Result Modal */}
+      <Dialog open={isAnalysisModalOpen} onOpenChange={setIsAnalysisModalOpen}>
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-2xl max-h-[90vh] overflow-y-auto no-scrollbar rounded-[3rem]">
+          {vastuResult && (
+            <>
+              <DialogHeader className="space-y-4">
+                <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center text-primary mx-auto border border-primary/20 shadow-2xl">
+                  <Zap className="w-10 h-10" />
+                </div>
+                <DialogTitle className="font-headline text-3xl font-bold text-center text-primary uppercase tracking-tighter">
+                  Spatial Analysis
+                </DialogTitle>
+                <DialogDescription className="text-center text-foreground font-black uppercase tracking-widest text-[10px] opacity-80">
+                  Sankhya Spatial Diagnostic
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-8 pt-6">
+                <section className="space-y-4">
+                  <h4 className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-sm">
+                    <Info className="w-4 h-4" /> Vastu Evaluation
+                  </h4>
+                  <div className="bg-white/5 p-6 rounded-3xl border border-white/10">
+                    <p className="text-sm text-foreground leading-relaxed font-bold italic">
+                      {vastuResult.analysis}
+                    </p>
+                  </div>
+                </section>
+
+                <section className="space-y-4">
+                  <h4 className="flex items-center gap-2 text-secondary font-black uppercase tracking-widest text-sm">
+                    <Sparkles className="w-4 h-4" /> Actionable Remedies
+                  </h4>
+                  <div className="grid grid-cols-1 gap-3">
+                    {vastuResult.remedies.map((remedy, i) => (
+                      <div key={i} className="bg-white/5 p-4 rounded-2xl border border-white/5 flex gap-4 items-center">
+                        <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary font-black shrink-0">
+                          {i + 1}
+                        </div>
+                        <span className="text-xs text-foreground font-bold">{remedy}</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="space-y-6">
+                  <h4 className="flex items-center gap-2 text-accent font-black uppercase tracking-widest text-sm">
+                    <Flame className="w-4 h-4" /> Elemental Signature
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white/5 p-8 rounded-[2rem] border border-white/10">
+                    {Object.entries(vastuResult.elementalBalance).map(([element, value]) => (
+                      <div key={element} className="space-y-2">
+                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-foreground/70">
+                          <span>{element}</span>
+                          <span className="text-accent">{value}%</span>
+                        </div>
+                        <Progress value={value} className="h-1.5" />
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <div className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary/60 pt-6 mt-4 border-t border-white/5">
+                  <BookOpen className="w-4 h-4" />
+                  Tap to Export Spatial Report
                 </div>
               </div>
             </>
