@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -15,7 +16,7 @@ import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator'
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, MessageSquare, Sparkles, Zap, Heart, Star, TrendingUp, Calendar } from 'lucide-react';
+import { MapPin, MessageSquare, Sparkles, Zap, Heart, Star, TrendingUp, Calendar, Sun, Moon, Orbit, Shield, Zap as Lightning } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const reduceToSingleDigit = (num: number): number => {
@@ -103,7 +104,6 @@ export default function Home() {
     const [year, month, day] = userProfile.birthDate.split('-').map(Number);
     const lifePath = reduceToSingleDigit(year + month + day);
     
-    // Future/Magical Numbers
     const currentYear = now.getFullYear();
     const personalYear = reduceToSingleDigit(month + day + currentYear);
     const personalMonth = reduceToSingleDigit(personalYear + (now.getMonth() + 1));
@@ -111,6 +111,16 @@ export default function Home() {
 
     return { lifePath, personalYear, personalMonth, universalDay };
   }, [userProfile]);
+
+  // Mock Celestial Events for the 2x3 Grid
+  const celestialEvents = [
+    { label: 'Sun Path', value: 'Aries Transit', icon: Sun, impact: 'High Vitality', color: 'text-primary' },
+    { label: 'Moon Phase', value: 'Waxing Crescent', icon: Moon, impact: 'Internal Growth', color: 'text-secondary' },
+    { label: 'Mercury Flow', value: 'Direct Motion', icon: Orbit, impact: 'Clear Logic', color: 'text-accent' },
+    { label: 'Mars Pulse', value: 'Leo Energy', icon: Lightning, impact: 'Creative Force', color: 'text-primary' },
+    { label: 'Jupiter Reach', icon: Star, value: 'Pisces Horizon', impact: 'Spiritual Expansion', color: 'text-secondary' },
+    { label: 'Saturn Hold', icon: Shield, value: 'Aquarius Zone', impact: 'Karmic Structure', color: 'text-accent' },
+  ];
 
   const isLanding = !userProfile;
 
@@ -195,22 +205,21 @@ export default function Home() {
                   <section className="relative w-full flex flex-col items-center">
                     <CelestialOrb userProfile={userProfile} lifePath={personalData?.lifePath} />
                     
-                    {/* Dynamic Data Hub Under the Orb */}
+                    {/* Celestial Events Grid Under the Orb (2x3 Grid) */}
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-[-20px] w-full max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-4 px-4 z-20"
+                      className="mt-4 w-full max-w-5xl grid grid-cols-2 md:grid-cols-3 gap-4 px-4 z-20"
                     >
-                      {[
-                        { label: 'Personal Year', value: personalData?.personalYear, icon: Star, color: 'text-primary' },
-                        { label: 'Personal Month', value: personalData?.personalMonth, icon: TrendingUp, color: 'text-secondary' },
-                        { label: 'Universal Day', value: personalData?.universalDay, icon: Calendar, color: 'text-accent' },
-                        { label: 'Astro Event', value: 'Moon Rise', icon: Sparkles, color: 'text-primary' },
-                      ].map((item, i) => (
-                        <Card key={i} className="glass-morphism border-none p-4 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-transform">
-                          <item.icon className={`w-4 h-4 mb-1 ${item.color}`} />
+                      {celestialEvents.map((item, i) => (
+                        <Card key={i} className="glass-morphism border-none p-5 flex flex-col items-center justify-center text-center gap-1 group hover:scale-105 transition-all cursor-default relative overflow-hidden">
+                          <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <item.icon className={`w-8 h-8 ${item.color}`} />
+                          </div>
+                          <item.icon className={`w-5 h-5 mb-1 ${item.color} group-hover:animate-pulse`} />
                           <span className="text-[9px] uppercase font-black tracking-widest text-foreground/60">{item.label}</span>
-                          <span className={`text-2xl font-headline font-black text-foreground group-hover:neon-glow`}>{item.value}</span>
+                          <span className={`text-lg font-headline font-black text-foreground group-hover:neon-glow`}>{item.value}</span>
+                          <span className="text-[10px] font-bold text-primary opacity-70 group-hover:opacity-100">{item.impact}</span>
                         </Card>
                       ))}
                     </motion.div>
@@ -231,8 +240,8 @@ export default function Home() {
                         </div>
                         <h3 className="text-2xl font-headline font-bold text-primary">Transit Weaver</h3>
                         <p className="text-base text-foreground font-bold leading-relaxed">
-                          Grid status indicates <span className="text-primary underline">Mercury Rising</span>. 
-                          Communication portals are <span className="text-secondary">vibrantly active</span> for your soul signature.
+                          Numerical signature suggests a <span className="text-primary underline">Personal Year {personalData?.personalYear}</span>. 
+                          The magical frequency for today is <span className="text-secondary">Vibration {personalData?.universalDay}</span>.
                         </p>
                         <button 
                           onClick={() => setActiveTab('calculator')} 
