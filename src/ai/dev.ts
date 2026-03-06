@@ -1,1 +1,7 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/interpret-palm-lines-flow.ts';
+import '@/ai/flows/direct-sankhya-query-flow.ts';
+import '@/ai/flows/generate-micro-ritual-flow.ts';
+import '@/ai/flows/daily-sankhya-insight-flow.ts';
