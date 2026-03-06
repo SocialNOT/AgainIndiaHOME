@@ -156,7 +156,7 @@ export function VibrationDashboard({ userProfile }: VibrationDashboardProps) {
       </Card>
 
       <Dialog open={!!selectedVibration} onOpenChange={() => setSelectedVibration(null)}>
-        <DialogContent className="glass-morphism border-primary/20 sm:max-w-lg rounded-[3rem]">
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-lg rounded-[3rem] max-h-[90vh] overflow-y-auto no-scrollbar">
           {selectedVibration && (
             <>
               <DialogHeader className="space-y-4">

@@ -296,7 +296,7 @@ export default function Home() {
 
       {/* Celestial Event Deep Dive Modal */}
       <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-        <DialogContent className="glass-morphism border-primary/20 sm:max-w-md rounded-[3rem]">
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-md rounded-[3rem] max-h-[90vh] overflow-y-auto no-scrollbar">
           {selectedEvent && (
             <>
               <DialogHeader className="space-y-4">

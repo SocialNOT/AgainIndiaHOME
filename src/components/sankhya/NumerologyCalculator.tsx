@@ -135,7 +135,7 @@ export function NumerologyCalculator({ userProfile }: { userProfile: any }) {
       </Card>
 
       <Dialog open={!!selectedStat} onOpenChange={() => setSelectedStat(null)}>
-        <DialogContent className="glass-morphism border-primary/20 sm:max-w-lg rounded-[3rem]">
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-lg rounded-[3rem] max-h-[90vh] overflow-y-auto no-scrollbar">
           {selectedStat && (
             <>
               <DialogHeader className="space-y-4">

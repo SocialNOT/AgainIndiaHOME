@@ -106,7 +106,7 @@ export function VastuCompass() {
       </div>
 
       <Dialog open={!!selectedDir} onOpenChange={() => setSelectedDir(null)}>
-        <DialogContent className="glass-morphism border-primary/20 sm:max-w-md rounded-[3rem]">
+        <DialogContent className="glass-morphism border-primary/20 sm:max-w-md rounded-[3rem] max-h-[90vh] overflow-y-auto no-scrollbar">
           {selectedDir && (
             <>
               <DialogHeader className="space-y-4">
