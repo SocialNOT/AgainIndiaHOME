@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -7,14 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, MapPin, Calendar, Clock, User, LogIn, Loader2 } from 'lucide-react';
+import { Sparkles, MapPin, Calendar, Clock, User, LogIn, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth, useUser } from '@/firebase';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export function UserBirthModal({ isOpen, onComplete, onCancel }: { isOpen: boolean, onComplete: (data: any) => void, onCancel: () => void }) {
   const auth = useAuth();
   const { user } = useUser();
+  const { toast } = useToast();
   const [isSyncing, setIsSyncing] = useState(false);
+  const [authError, setAuthError] = useState<{ code: string; message: string } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     birthDate: '',
@@ -33,10 +36,29 @@ export function UserBirthModal({ isOpen, onComplete, onCancel }: { isOpen: boole
 
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
+    setAuthError(null);
     try {
       await signInWithPopup(auth, provider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Auth error:", error);
+      setAuthError({
+        code: error.code,
+        message: error.message
+      });
+      
+      if (error.code === 'auth/unauthorized-domain') {
+        toast({
+          variant: 'destructive',
+          title: 'Unauthorized Domain',
+          description: 'This domain needs to be authorized in the Firebase Console.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Authentication Failed',
+          description: error.message || 'Could not sign in with Google.',
+        });
+      }
     }
   };
 
@@ -53,6 +75,8 @@ export function UserBirthModal({ isOpen, onComplete, onCancel }: { isOpen: boole
       setIsSyncing(false);
     }
   };
+
+  const isUnauthorizedDomain = authError?.code === 'auth/unauthorized-domain';
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
@@ -73,7 +97,21 @@ export function UserBirthModal({ isOpen, onComplete, onCancel }: { isOpen: boole
         </DialogHeader>
 
         {!user ? (
-          <div className="relative z-10 pt-8 space-y-4">
+          <div className="relative z-10 pt-8 space-y-6">
+            {isUnauthorizedDomain && (
+              <Alert variant="destructive" className="bg-destructive/10 border-destructive/20 rounded-2xl">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle className="text-xs font-black uppercase tracking-widest">Domain Authorization Required</AlertTitle>
+                <AlertDescription className="text-[10px] font-bold leading-relaxed mt-2">
+                  To enable login, please add this domain to your **Firebase Console**:
+                  <code className="block mt-2 p-2 bg-black/20 rounded text-[9px] break-all">
+                    {typeof window !== 'undefined' ? window.location.hostname : 'current-domain'}
+                  </code>
+                  <p className="mt-2 opacity-70">Path: Authentication &gt; Settings &gt; Authorized Domains</p>
+                </AlertDescription>
+              </Alert>
+            )}
+
             <Button 
               onClick={handleGoogleLogin}
               className="w-full h-18 bg-white text-black hover:bg-white/90 font-black text-xs uppercase tracking-[0.2em] rounded-[1.5rem] flex items-center justify-center gap-3"
