@@ -3,7 +3,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CelestialOrb } from '@/components/orrery/CelestialOrb';
 import { GlassDock } from '@/components/navigation/GlassDock';
 import { DailyBriefing } from '@/components/sankhya/DailyBriefing';
 import { LifeGraph } from '@/components/sankhya/LifeGraph';
@@ -15,8 +14,9 @@ import { VastuCompass } from '@/components/sankhya/VastuCompass';
 import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator';
 import { ThemeToggle } from '@/components/navigation/ThemeToggle';
 import { WelcomeHero } from '@/components/landing/WelcomeHero';
+import { VibrationDashboard } from '@/components/sankhya/VibrationDashboard';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, MessageSquare, Sparkles, Zap, Star, Sun, Moon, Orbit, Shield, Zap as Lightning, Info, Target, History } from 'lucide-react';
+import { MapPin, Sparkles, Star, Sun, Moon, Orbit, Shield, Zap as Lightning, Target, History } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
@@ -220,15 +220,15 @@ export default function Home() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12 sm:space-y-16"
                 >
-                  {/* Central Interactive Orrery */}
+                  {/* Catchy Personalized Resonance Section */}
                   <section className="relative w-full flex flex-col items-center">
-                    <CelestialOrb userProfile={userProfile} lifePath={personalData?.lifePath} />
+                    <VibrationDashboard userProfile={userProfile} />
                     
-                    {/* High-End Cosmic Events Grid: Icons on Mobile, Details on Desktop */}
+                    {/* Celestial Events Grid: Icons on Mobile, Details on Desktop */}
                     <motion.div 
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-8 w-full max-w-4xl grid grid-cols-6 gap-2 sm:gap-4 px-4 sm:px-0 z-20"
+                      className="mt-8 w-full max-w-4xl grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4 px-4 sm:px-0 z-20"
                     >
                       {celestialEvents.map((item, i) => (
                         <Card 
@@ -249,7 +249,7 @@ export default function Home() {
                     </motion.div>
                   </section>
 
-                  {/* Compact Dashboard Cards */}
+                  {/* Dashboard Grid */}
                   <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 sm:gap-12 items-start">
                     <div className="xl:col-span-3">
                       <DailyBriefing data={dailyData} />
@@ -323,7 +323,7 @@ export default function Home() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-2xl bg-secondary/10 border border-secondary/20 flex flex-col items-center text-center">
-                    <Zap className="w-4 h-4 text-secondary mb-2" />
+                    <Lightning className="w-4 h-4 text-secondary mb-2" />
                     <h5 className="text-[9px] font-black uppercase text-secondary tracking-widest">Active Pulse</h5>
                     <p className="text-[10px] text-foreground font-black">{selectedEvent.impact}</p>
                   </div>
