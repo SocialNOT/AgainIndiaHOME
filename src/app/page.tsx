@@ -223,31 +223,6 @@ export default function Home() {
             </>
           )}
         </AnimatePresence>
-
-        {/* Footer Credit */}
-        <footer className="mt-24 pb-12 text-center">
-          <a 
-            href="https://www.eastindiaautomation.com" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="group inline-flex flex-wrap items-center justify-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:border-primary/40 hover:bg-white/10 transition-all duration-500"
-          >
-            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-foreground/70 group-hover:text-foreground">
-              Made in India
-            </span>
-            <span className="text-lg animate-flag-wave inline-block">🇮🇳</span>
-            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-foreground/70 group-hover:text-foreground">
-              with
-            </span>
-            <Heart className="w-4 h-4 animate-heart-chroma fill-current" />
-            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-foreground/70 group-hover:text-foreground">
-              love by
-            </span>
-            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-primary group-hover:neon-glow">
-              Rajib Singh
-            </span>
-          </a>
-        </footer>
       </div>
 
       <UserBirthModal isOpen={showOnboarding} onComplete={handleOnboardingComplete} onCancel={() => setShowOnboarding(false)} />

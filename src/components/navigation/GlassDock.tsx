@@ -7,7 +7,8 @@ import {
   Compass, 
   Scan, 
   ShieldCheck,
-  Home
+  Home,
+  Heart
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -24,7 +25,8 @@ const navItems = [
 
 export function GlassDock({ activeTab, onTabChange }: { activeTab: string, onTabChange: (id: string) => void }) {
   return (
-    <nav className="fixed bottom-6 left-0 right-0 z-50 px-4 flex justify-center pointer-events-none">
+    <nav className="fixed bottom-4 left-0 right-0 z-50 px-4 flex flex-col items-center gap-4 pointer-events-none">
+      {/* Dock Icons Container */}
       <div className="glass-morphism rounded-[2.5rem] p-2 flex items-center gap-2 border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)] pointer-events-auto max-w-[95vw] overflow-x-auto no-scrollbar">
         <TooltipProvider delayDuration={0}>
           {navItems.map((item) => {
@@ -59,6 +61,31 @@ export function GlassDock({ activeTab, onTabChange }: { activeTab: string, onTab
             );
           })}
         </TooltipProvider>
+      </div>
+
+      {/* Sticky Footer Credit */}
+      <div className="pointer-events-auto">
+        <a 
+          href="https://www.eastindiaautomation.com" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="group inline-flex flex-wrap items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-background/40 backdrop-blur-xl border border-white/5 hover:border-primary/40 hover:bg-white/5 transition-all duration-500 shadow-2xl"
+        >
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
+            Made in India
+          </span>
+          <span className="text-sm animate-flag-wave inline-block">🇮🇳</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
+            with
+          </span>
+          <Heart className="w-3.5 h-3.5 animate-heart-chroma fill-current" />
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
+            love by
+          </span>
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary group-hover:neon-glow">
+            Rajib Singh
+          </span>
+        </a>
       </div>
     </nav>
   );
