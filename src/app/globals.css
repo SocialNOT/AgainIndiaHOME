@@ -23,13 +23,13 @@
     --border: 240 18% 15%;
     --input: 240 18% 15%;
     --ring: 27 100% 60%;
-    --radius: 0rem; /* Strictly square for the requested sleek look */
+    --radius: 0rem; 
   }
 }
 
 @layer base {
   * {
-    @apply border-border rounded-none !important; /* Force square edges app-wide */
+    @apply border-border rounded-none !important; 
   }
   body {
     @apply bg-background text-foreground font-body antialiased selection:bg-primary/30 overflow-x-hidden;
@@ -51,7 +51,7 @@
 }
 
 .neon-glow {
-  text-shadow: 0 0 8px hsl(var(--primary) / 0.6);
+  text-shadow: 0 0 10px hsl(var(--primary) / 0.8), 0 0 20px hsl(var(--primary) / 0.3);
 }
 
 .sacred-grid {
@@ -61,11 +61,22 @@
   background-size: 30px 30px;
 }
 
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 5px hsla(var(--primary), 0.5)); }
+  50% { filter: drop-shadow(0 0 20px hsla(var(--primary), 0.8)); }
 }
-.animate-spin-very-slow { animation: spin-slow 60s linear infinite; }
+
+.pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}

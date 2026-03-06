@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Target, Orbit, Forward } from 'lucide-react';
+import { Zap, Target, Orbit, Forward, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { CelestialOrb } from '../orrery/CelestialOrb';
 
@@ -30,36 +30,45 @@ export function VibrationDashboard({ userProfile, language }: { userProfile: any
   const vibrations = [
     { label: 'Life Path', value: stats.lifePath, icon: Zap, color: 'text-primary' },
     { label: 'Destiny', value: stats.destiny, icon: Target, color: 'text-secondary' },
-    { label: 'Year', value: stats.personalYear, icon: Orbit, color: 'text-accent' }
+    { label: 'Personal Year', value: stats.personalYear, icon: Orbit, color: 'text-accent' }
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
-      <div className="lg:col-span-3 order-2 lg:order-1 flex justify-center">
-        <CelestialOrb lifePath={stats.lifePath} destiny={stats.destiny} />
-      </div>
-      <div className="lg:col-span-2 space-y-3 order-1 lg:order-2">
-        <div className="mb-4">
-          <h2 className="text-2xl font-bold uppercase tracking-tight text-foreground">
-            Vibration <span className="text-primary">Matrix</span>
-          </h2>
-          <p className="text-[8px] font-bold text-foreground/40 uppercase tracking-[0.3em]">Resonance Link Active</p>
+    <Card className="glass-morphism p-0 border-none overflow-hidden bg-transparent shadow-none">
+      <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-6">
+        <div className="md:col-span-7 flex justify-center py-4">
+          <CelestialOrb lifePath={stats.lifePath} destiny={stats.destiny} />
         </div>
-        {vibrations.map((v, i) => (
-          <Card key={i} className="glass-morphism p-4 border-none flex items-center justify-between hover:bg-white/10 transition-colors">
-            <div className="flex items-center gap-4">
-              <div className={`w-10 h-10 bg-white/5 flex items-center justify-center ${v.color}`}>
-                <v.icon className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-[8px] font-bold uppercase text-foreground/50 tracking-widest">{v.label}</h4>
-                <div className="text-2xl font-bold text-foreground">{v.value}</div>
-              </div>
-            </div>
-            <Forward className="w-4 h-4 text-primary opacity-30" />
-          </Card>
-        ))}
+        <div className="md:col-span-5 flex flex-col gap-2 p-4 md:p-6 bg-white/[0.02] border-l border-white/5 h-full justify-center">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold uppercase tracking-[0.2em] text-foreground">
+              VIBRATION <span className="text-primary">MATRIX</span>
+            </h2>
+            <p className="text-[8px] font-black text-foreground/30 uppercase tracking-[0.4em]">SYNC STATUS: ACTIVE</p>
+          </div>
+          {vibrations.map((v, i) => (
+            <motion.div
+              key={v.label}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <Card className="glass-morphism p-4 border-white/5 flex items-center justify-between hover:bg-white/10 transition-colors group cursor-default">
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 bg-white/5 flex items-center justify-center ${v.color} border border-white/5 shadow-inner`}>
+                    <v.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  </div>
+                  <div>
+                    <h4 className="text-[8px] font-black uppercase text-foreground/40 tracking-[0.2em]">{v.label}</h4>
+                    <div className="text-2xl font-black text-foreground">{v.value}</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }
