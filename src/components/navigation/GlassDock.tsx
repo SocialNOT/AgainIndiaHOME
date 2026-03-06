@@ -69,7 +69,7 @@ export function GlassDock({ activeTab, onTabChange }: { activeTab: string, onTab
           href="https://www.eastindiaautomation.com" 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="group inline-flex flex-wrap items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-background/40 backdrop-blur-xl border border-white/5 hover:border-primary/40 hover:bg-white/5 transition-all duration-500 shadow-2xl"
+          className="group inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-background/40 backdrop-blur-xl border border-white/5 hover:border-primary/40 hover:bg-white/5 transition-all duration-500 shadow-2xl"
         >
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/60 group-hover:text-foreground">
             Made in
