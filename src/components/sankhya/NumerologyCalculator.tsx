@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, Zap, Target, Heart, TrendingUp } from 'lucide-react';
+import { Calculator, Zap, Target, Heart, TrendingUp, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const letterValues: Record<string, number> = {
@@ -44,65 +44,69 @@ export function NumerologyCalculator({ userProfile }: { userProfile: any }) {
   const destiny = useMemo(calculateDestiny, [userProfile]);
 
   const stats = [
-    { label: 'Life Path', value: lifePath, icon: Zap, color: 'text-primary', desc: 'The blueprint of your destiny.' },
-    { label: 'Destiny', value: destiny, icon: Target, color: 'text-secondary', desc: 'Your manifestation power.' },
-    { label: 'Soul Urge', value: reduceToSingleDigit(lifePath + destiny), icon: Heart, color: 'text-red-400', desc: 'Inner motivation.' },
-    { label: 'Expression', value: reduceToSingleDigit(destiny * 2), icon: TrendingUp, color: 'text-blue-400', desc: 'Outer personality.' },
+    { label: 'Life Path', value: lifePath, icon: Zap, color: 'text-primary', desc: 'The blueprint of your destiny.', stack: 'random-stack-1' },
+    { label: 'Destiny', value: destiny, icon: Target, color: 'text-secondary', desc: 'Your manifestation power.', stack: 'random-stack-2' },
+    { label: 'Soul Urge', value: reduceToSingleDigit(lifePath + destiny), icon: Heart, color: 'text-red-400', desc: 'Inner motivation.', stack: 'random-stack-3' },
+    { label: 'Expression', value: reduceToSingleDigit(destiny * 2), icon: TrendingUp, color: 'text-blue-400', desc: 'Outer personality.', stack: 'random-stack-1' },
   ];
 
   return (
     <div className="max-w-4xl mx-auto space-y-12">
       <div className="text-center space-y-2">
-        <h2 className="text-3xl font-headline font-bold text-primary flex items-center justify-center gap-3">
-          <Calculator className="w-8 h-8" />
+        <h2 className="text-4xl font-headline font-bold text-primary flex items-center justify-center gap-3">
+          <Calculator className="w-10 h-10" />
           The Matrix of Nine
         </h2>
-        <p className="text-muted-foreground">The numerical signature of your earthly incarnation.</p>
+        <p className="text-muted-foreground font-light tracking-wide">The numerical signature of your earthly incarnation.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 px-4">
         {stats.map((stat, i) => (
           <motion.div
             key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.1 }}
+            className={stat.stack}
           >
-            <Card className="glass-morphism p-6 border-white/5 flex flex-col items-center text-center space-y-4 hover:border-primary/20 transition-all">
-              <div className={`w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center ${stat.color}`}>
+            <Card className="glass-morphism p-6 border-white/5 flex flex-col items-center text-center space-y-4 hover:scale-110 hover:rotate-0 hover:z-20 transition-all cursor-pointer group">
+              <div className={`w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center ${stat.color} group-hover:scale-125 transition-transform`}>
                 <stat.icon className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">{stat.label}</h4>
-                <div className="text-4xl font-headline font-bold text-foreground">{stat.value}</div>
+                <h4 className="text-[9px] uppercase font-black tracking-[0.2em] text-muted-foreground group-hover:text-foreground transition-colors">{stat.label}</h4>
+                <div className="text-4xl sm:text-5xl font-headline font-black text-foreground neon-glow">{stat.value}</div>
               </div>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">{stat.desc}</p>
+              <p className="text-[10px] text-muted-foreground leading-relaxed hidden sm:block">{stat.desc}</p>
             </Card>
           </motion.div>
         ))}
       </div>
 
-      <Card className="glass-morphism p-8 border-white/10 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-5">
-          <Calculator className="w-48 h-48 text-primary" />
+      <Card className="glass-morphism p-8 border-white/10 relative overflow-hidden group hover:bg-white/10 transition-all">
+        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+          <Sparkles className="w-48 h-48 text-primary" />
         </div>
-        <div className="max-w-2xl space-y-4 relative z-10">
-          <h3 className="text-xl font-headline font-bold text-primary">Sankhya Analysis</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Your Life Path of <span className="text-foreground font-bold">{lifePath}</span> indicates a vibration deeply aligned with 
-            {lifePath === 1 ? ' leadership and innovation.' : 
-             lifePath === 2 ? ' harmony and diplomacy.' :
-             lifePath === 3 ? ' creativity and self-expression.' :
-             lifePath === 4 ? ' stability and hard work.' :
-             lifePath === 5 ? ' freedom and adventure.' :
-             lifePath === 6 ? ' responsibility and nurturing.' :
-             lifePath === 7 ? ' spirituality and introspection.' :
-             lifePath === 8 ? ' power and material success.' :
-             ' universal love and completion.'}
+        <div className="max-w-2xl space-y-6 relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-8 bg-primary rounded-full" />
+            <h3 className="text-2xl font-headline font-bold text-primary uppercase tracking-tighter">Sankhya Matrix Analysis</h3>
+          </div>
+          <p className="text-base text-muted-foreground leading-relaxed">
+            Your Life Path of <span className="text-foreground font-black underline decoration-primary underline-offset-4">{lifePath}</span> indicates a vibration deeply aligned with 
+            {lifePath === 1 ? ' leadership and radical innovation.' : 
+             lifePath === 2 ? ' profound harmony and diplomacy.' :
+             lifePath === 3 ? ' creative brilliance and self-expression.' :
+             lifePath === 4 ? ' unbreakable stability and architectural mastery.' :
+             lifePath === 5 ? ' absolute freedom and dynamic adventure.' :
+             lifePath === 6 ? ' cosmic responsibility and nurturing wisdom.' :
+             lifePath === 7 ? ' esoteric spirituality and deep introspection.' :
+             lifePath === 8 ? ' infinite power and material manifestation.' :
+             ' universal love and spiritual completion.'}
           </p>
           <div className="flex flex-wrap gap-2 pt-4">
-             {['Pythagorean System', 'Chaldean Grid', 'Active Resonance'].map(tag => (
-               <span key={tag} className="text-[9px] uppercase tracking-widest bg-white/5 border border-white/10 px-3 py-1 rounded-full text-muted-foreground">
+             {['Pythagorean Grid', 'Chaldean Resonance', 'Active Frequency'].map(tag => (
+               <span key={tag} className="text-[10px] uppercase font-bold tracking-widest bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-muted-foreground hover:text-primary hover:border-primary/30 transition-all cursor-default">
                  {tag}
                </span>
              ))}

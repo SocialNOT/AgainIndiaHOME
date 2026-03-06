@@ -13,7 +13,7 @@ import { RitualGenerator } from '@/components/sankhya/RitualGenerator';
 import { VastuCompass } from '@/components/sankhya/VastuCompass';
 import { NumerologyCalculator } from '@/components/sankhya/NumerologyCalculator';
 import { dailySankhyaInsight, DailySankhyaInsightOutput } from '@/ai/flows/daily-sankhya-insight-flow';
-import { MapPin, MessageSquare, Sparkles, Zap, Navigation } from 'lucide-react';
+import { MapPin, MessageSquare, Sparkles, Zap } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 export default function Home() {
@@ -23,6 +23,11 @@ export default function Home() {
   const [dailyData, setDailyData] = useState<DailySankhyaInsightOutput | null>(null);
   const [isLoadingInsight, setIsLoadingInsight] = useState(false);
   const [location, setLocation] = useState({ lat: 28.6139, lon: 77.2090, name: 'Varanasi Pulse' });
+
+  // Scroll to top on tab change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
 
   useEffect(() => {
     const saved = localStorage.getItem('again-india-profile');
@@ -78,9 +83,9 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen bg-cosmic flex flex-col overflow-x-hidden selection:bg-primary/30">
-      {/* Cyber Grid Background */}
-      <div className="fixed inset-0 sacred-grid pointer-events-none z-0 opacity-30" />
+    <main className="relative min-h-screen bg-cosmic flex flex-col overflow-x-hidden">
+      {/* Moving Sacred Grid */}
+      <div className="fixed inset-0 sacred-grid pointer-events-none z-0 opacity-40" />
 
       {/* Top Bar */}
       <header className="fixed top-0 left-0 right-0 z-50 h-20 flex items-center justify-between px-6 sm:px-12 backdrop-blur-2xl bg-background/40 border-b border-white/5">
@@ -103,8 +108,8 @@ export default function Home() {
 
         <div className="flex items-center gap-6">
           <div className="hidden md:block text-right">
-            <div className="text-[10px] font-black text-foreground uppercase tracking-widest">SANKHYA CORE v1.0</div>
-            <div className="text-[9px] text-secondary font-bold uppercase">Quantum Synchro Active</div>
+            <div className="text-[10px] font-black text-foreground uppercase tracking-widest">SANKHYA CORE v1.2</div>
+            <div className="text-[9px] text-secondary font-bold uppercase">Grid Resonance Active</div>
           </div>
           <motion.div 
             whileHover={{ scale: 1.05, rotate: 5 }}
@@ -128,7 +133,7 @@ export default function Home() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-12 sm:space-y-16"
             >
-              {/* Catchy Chat CTA Tabular Button */}
+              {/* Catchy Chat CTA */}
               <div className="flex justify-center w-full">
                 <motion.button
                   whileHover={{ scale: 1.02, y: -2 }}
@@ -166,13 +171,15 @@ export default function Home() {
               </section>
 
               {/* Daily Briefing & Life Graph */}
-              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 sm:gap-12">
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8 sm:gap-12 items-start">
                 <div className="xl:col-span-3">
                   <DailyBriefing data={dailyData} />
                 </div>
                 <div className="xl:col-span-2 space-y-8">
-                  <LifeGraph />
-                  <Card className="glass-morphism rounded-3xl p-8 flex flex-col justify-center gap-6 border-none relative overflow-hidden group">
+                  <div className="random-stack-2">
+                    <LifeGraph />
+                  </div>
+                  <Card className="glass-morphism rounded-3xl p-8 flex flex-col justify-center gap-6 border-none relative overflow-hidden group random-stack-1 hover:scale-105 hover:rotate-0 transition-transform duration-500">
                     <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
                       <Sparkles className="w-48 h-48 text-primary" />
                     </div>
